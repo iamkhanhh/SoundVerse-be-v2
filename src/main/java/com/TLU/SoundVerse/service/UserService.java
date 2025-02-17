@@ -11,6 +11,7 @@ import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.mapper.UserMapper;
 import com.TLU.SoundVerse.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -47,7 +48,9 @@ public class UserService {
     //     return usermapper.toUserResponseDto(userRepository.save(user));
     // }
 
+    @Transactional
     public void deleteUser(String userId) {
-        userRepository.deleteById(userId);
+        Integer id = Integer.parseInt(userId);
+        userRepository.deleteById(id);
     }
 }

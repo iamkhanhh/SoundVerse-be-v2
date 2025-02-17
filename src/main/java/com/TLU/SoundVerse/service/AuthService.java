@@ -77,9 +77,9 @@ public class AuthService {
 
     JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
             .subject(email)
-            .issuer("money-management.com")
+            .issuer("SoundVerse.com")
             .issueTime(new Date())
-            .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+            .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
             .claim("customClaim", "khanh")
             .build();
 

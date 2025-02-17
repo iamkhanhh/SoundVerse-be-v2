@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,5 +28,6 @@ public class CreateUserDto {
     @Email()
     String email;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
 }

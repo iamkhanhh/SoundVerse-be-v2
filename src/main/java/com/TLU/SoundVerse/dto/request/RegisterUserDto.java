@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateUserDto {
+public class RegisterUserDto {
     @Size(min = 3, message = "Username must be at least 3 characters")
     String username;
 

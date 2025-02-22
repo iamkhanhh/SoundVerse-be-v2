@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.TLU.SoundVerse.dto.request.CreateUserDto;
+import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.mapper.UserMapper;
 import com.TLU.SoundVerse.repository.UserRepository;
@@ -23,7 +23,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
 
-    public User create(CreateUserDto request) {
+    public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email has been already used, please use another email!");
         }

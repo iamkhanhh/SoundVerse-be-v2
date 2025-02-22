@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.TLU.SoundVerse.dto.request.CreateUserDto;
+import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.service.UserService;
@@ -28,7 +28,7 @@ public class UserController {
   UserService userService;
 
   @PostMapping
-  ApiResponse<User> createUser(@RequestBody @Valid CreateUserDto createUserDto) {
+  ApiResponse<User> createUser(@RequestBody @Valid RegisterUserDto createUserDto) {
     ApiResponse<User> apiResponse = new ApiResponse<User>();
 
     apiResponse.setStatus("success");

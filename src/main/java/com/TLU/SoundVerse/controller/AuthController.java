@@ -1,13 +1,18 @@
 package com.TLU.SoundVerse.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.TLU.SoundVerse.dto.request.LoginDto;
+import com.TLU.SoundVerse.dto.request.VerifiDto;
+import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.AuthResponse;
+import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.service.AuthService;
 
 import jakarta.servlet.http.Cookie;
@@ -50,4 +55,29 @@ public class AuthController {
 
   // return ApiResponse.<IntrospectResponse>builder().data(result).build();
   // }
+  @PostMapping("/signup")
+    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
+        User registeredUser = authService.signup(registerUserDto);
+        return ResponseEntity.ok(registeredUser);
+    }
+
+    @PostMapping("/verify")
+        public ResponseEntity<?> verifyUser(@RequestBody VerifiDto verifyUserDto) {
+            try {
+                authService.verifyUser(verifyUserDto);
+                return ResponseEntity.ok("Account verified successfully");
+            } catch (RuntimeException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+    }
+
+    @PostMapping("/resend")
+            public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+                try {
+                    authService.resendVerificationCode(email);
+                    return ResponseEntity.ok("Verification code sent");
+                } catch (RuntimeException e) {
+                    return ResponseEntity.badRequest().body(e.getMessage());
+                }
+            }
 }

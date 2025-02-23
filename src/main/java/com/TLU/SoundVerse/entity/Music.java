@@ -29,4 +29,5 @@ public class Music {
 
     private Integer lenghth;
 
+    private String filePath;
 }

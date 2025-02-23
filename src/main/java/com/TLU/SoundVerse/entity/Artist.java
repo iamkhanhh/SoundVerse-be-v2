@@ -9,7 +9,7 @@ import lombok.Data;
 @Entity
 @Data
 public class Artist {
- @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

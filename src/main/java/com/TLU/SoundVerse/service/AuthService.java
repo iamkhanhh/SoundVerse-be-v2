@@ -15,6 +15,8 @@ import com.TLU.SoundVerse.dto.request.LoginDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.request.VerifiDto;
 import com.TLU.SoundVerse.entity.User;
+import com.TLU.SoundVerse.enums.UserRole;
+import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.repository.UserRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -31,6 +33,7 @@ import lombok.experimental.NonFinal;
 import lombok.AccessLevel;
 import com.TLU.SoundVerse.service.EmailService;
 
+@SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -90,7 +93,8 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-        user.setEnabled(false);
+        user.setStatus(UserStatus.PENDING);
+        user.setRole(UserRole.USER);
 
         sendVerificationEmail(user);
         return userRepository.save(user);
@@ -108,7 +112,7 @@ public class AuthService {
             throw new RuntimeException("Invalid verification code");
         }
 
-        user.setEnabled(true);
+        user.setStatus(UserStatus.ACTIVE);
         user.setVerificationCode(null);
         user.setVerificationCodeExpiresAt(null);
         userRepository.save(user);
@@ -117,7 +121,7 @@ public class AuthService {
     public void resendVerificationCode(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.isEnabled()) {
+        if (user.getStatus() == UserStatus.ACTIVE) {
             throw new RuntimeException("Account is already verified");
         }
 

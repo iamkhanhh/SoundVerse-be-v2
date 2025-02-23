@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users","/auth/**"};
+    private final String[] PUBLIC_ENDPOINTS = { "/users", "/auth/**" };
 
     @Value("${jwt.signerKey}")
     private String signerKey;
@@ -44,5 +44,48 @@ public class SecurityConfig {
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
-}
 
+    // @Bean
+    // public Filter jwtAuthenticationFilter() {
+    //     return (request, response, chain) -> {
+    //         // Lấy JWT từ Cookie
+    //         String token = getTokenFromCookie((HttpServletRequest) request);
+
+    //         if (token != null) {
+    //             try {
+    //                 // Giải mã JWT
+    //                 Jwt jwt = jwtDecoder().decode(token);
+    //                 String userId = jwt.getClaim("sub"); // "sub" thường là ID người dùng
+
+    //                 // Tạo đối tượng UserDetails
+    //                 User userDetails = new User(userId, "", Collections.emptyList());
+
+    //                 // Lưu vào Security Context
+    //                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+    //                         null, userDetails.getAuthorities());
+    //                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+    //                 // Lưu vào request.user
+    //                 request.setAttribute("user", userDetails);
+    //             } catch (Exception e) {
+    //                 System.out.println("Invalid JWT: " + e.getMessage());
+    //             }
+    //         }
+
+    //         // Tiếp tục xử lý request
+    //         chain.doFilter(request, response);
+    //     };
+    // }
+
+    // private String getTokenFromCookie(HttpServletRequest request) {
+    //     Cookie[] cookies = request.getCookies();
+    //     if (cookies != null) {
+    //         for (Cookie cookie : cookies) {
+    //             if ("access_token".equals(cookie.getName())) {
+    //                 return cookie.getValue();
+    //             }
+    //         }
+    //     }
+    //     return null;
+    // }
+}

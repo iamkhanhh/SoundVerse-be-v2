@@ -47,7 +47,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    public String authenticate(LoginDto request, Object LoginDto) {
+    public String authenticate(LoginDto request) {
                     var user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User Not Found"));
     
@@ -57,17 +57,19 @@ public class AuthService {
             throw new RuntimeException("Unauthorized");
         }
 
-        return generateToken(request.getEmail());
+        return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 
-    private String generateToken(String email) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(email)
-                .issuer("SoundVerse.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
-                .claim("customClaim", "khanh")
+    private String generateToken(Integer id, String email, String username, UserRole role) {
+            JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+            JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                    .issuer("SoundVerse.com")
+                    .issueTime(new Date())
+                    .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
+                    .claim("id", String.valueOf(id))
+                    .claim("email", email)
+                    .claim("username", username)
+                    .claim("role", role)
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -82,7 +84,7 @@ public class AuthService {
         }
     }
 
-    public User signup(RegisterUserDto input) {
+    public String signup(RegisterUserDto input) {
         if (userRepository.existsByEmail(input.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
@@ -97,7 +99,8 @@ public class AuthService {
         user.setRole(UserRole.USER);
 
         sendVerificationEmail(user);
-        return userRepository.save(user);
+        userRepository.save(user);
+        return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 
     public void verifyUser(VerifiDto input) {
@@ -158,7 +161,7 @@ public class AuthService {
         return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 
-    public String authenticate(LoginDto request) {
-        throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
-    }
+    // public String authenticate(LoginDto request) {
+    //     throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
+    // }
 }

@@ -6,13 +6,32 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.TLU.SoundVerse.enums.UserRole;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -34,6 +53,10 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
 
@@ -45,47 +68,64 @@ public class SecurityConfig {
                 .build();
     }
 
-    // @Bean
-    // public Filter jwtAuthenticationFilter() {
-    //     return (request, response, chain) -> {
-    //         // Lấy JWT từ Cookie
-    //         String token = getTokenFromCookie((HttpServletRequest) request);
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Credentials"));
+        configuration.setAllowCredentials(true);
 
-    //         if (token != null) {
-    //             try {
-    //                 // Giải mã JWT
-    //                 Jwt jwt = jwtDecoder().decode(token);
-    //                 String userId = jwt.getClaim("sub"); // "sub" thường là ID người dùng
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-    //                 // Tạo đối tượng UserDetails
-    //                 User userDetails = new User(userId, "", Collections.emptyList());
+    @Bean
+    public Filter jwtAuthenticationFilter() {
+        return (request, response, chain) -> {
+            String token = getTokenFromCookie((HttpServletRequest) request);
 
-    //                 // Lưu vào Security Context
-    //                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-    //                         null, userDetails.getAuthorities());
-    //                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (token != null) {
+                try {
+                    Jwt jwt = jwtDecoder().decode(token);
 
-    //                 // Lưu vào request.user
-    //                 request.setAttribute("user", userDetails);
-    //             } catch (Exception e) {
-    //                 System.out.println("Invalid JWT: " + e.getMessage());
-    //             }
-    //         }
+                    String id = jwt.getClaimAsString("id");
+                    String username = jwt.getClaimAsString("username");
+                    String email = jwt.getClaimAsString("email");
+                    String role = jwt.getClaimAsString("role");
 
-    //         // Tiếp tục xử lý request
-    //         chain.doFilter(request, response);
-    //     };
-    // }
+                    Map<String, Object> userInfo = Map.of(
+                            "id", id,
+                            "username", username,
+                            "email", email,
+                            "role", role);
 
-    // private String getTokenFromCookie(HttpServletRequest request) {
-    //     Cookie[] cookies = request.getCookies();
-    //     if (cookies != null) {
-    //         for (Cookie cookie : cookies) {
-    //             if ("access_token".equals(cookie.getName())) {
-    //                 return cookie.getValue();
-    //             }
-    //         }
-    //     }
-    //     return null;
-    // }
+                    request.setAttribute("user", userInfo);
+
+                    UserDetails userDetails = new User(username, "", Collections.emptyList());
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+                            null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } catch (Exception e) {
+                    System.out.println("Invalid JWT: " + e.getMessage());
+                }
+            }
+
+            chain.doFilter(request, response);
+        };
+    }
+
+    private String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        System.out.println("No access_token cookie found!");
+        return null;
+    }    
 }

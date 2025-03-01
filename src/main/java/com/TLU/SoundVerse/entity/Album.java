@@ -18,6 +18,8 @@ public class Album {
     private String description;
 
     private Integer artistId;
+
+    private Integer isUserPlaylist;
     
     private String thumbnail;
 

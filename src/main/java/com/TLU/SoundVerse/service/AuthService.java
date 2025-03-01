@@ -54,7 +54,7 @@ public class AuthService {
                     boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!isAuthenticated) {
-            throw new RuntimeException("Unauthorized");
+            throw new RuntimeException("Password did not match");
         }
 
         return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());

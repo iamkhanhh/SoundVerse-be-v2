@@ -1,6 +1,7 @@
 package com.TLU.SoundVerse.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.entity.User;
+import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.mapper.UserMapper;
 import com.TLU.SoundVerse.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -48,9 +49,17 @@ public class UserService {
     //     return usermapper.toUserResponseDto(userRepository.save(user));
     // }
 
-    @Transactional
     public void deleteUser(String userId) {
         Integer id = Integer.parseInt(userId);
-        userRepository.deleteById(id);
+        Optional<User> optionalUser = userRepository.findById(id);
+        
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setStatus(UserStatus.DELETED);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
+    
 }

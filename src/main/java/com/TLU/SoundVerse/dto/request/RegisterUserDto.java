@@ -30,4 +30,10 @@ public class RegisterUserDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDate dob;
+
+    String gender;
+
+    String country;
+
+    String fullName;
 }

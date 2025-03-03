@@ -3,6 +3,8 @@ package com.TLU.SoundVerse.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.TLU.SoundVerse.enums.UserRole;
+import com.TLU.SoundVerse.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
@@ -33,7 +35,7 @@ public class User {
 
     private String country;
 
-    private String type;
+    private UserRole role;
 
     private String profilePicImage;
 
@@ -43,9 +45,7 @@ public class User {
 
     private LocalDateTime verificationCodeExpiresAt;
     
-    private boolean enabled;
-
-
+    private UserStatus status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dob;

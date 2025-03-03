@@ -15,6 +15,8 @@ import com.TLU.SoundVerse.dto.request.LoginDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.request.VerifiDto;
 import com.TLU.SoundVerse.entity.User;
+import com.TLU.SoundVerse.enums.UserRole;
+import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.repository.UserRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -31,6 +33,7 @@ import lombok.experimental.NonFinal;
 import lombok.AccessLevel;
 import com.TLU.SoundVerse.service.EmailService;
 
+@SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -44,27 +47,29 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    public String authenticate(LoginDto request, Object LoginDto) {
+    public String authenticate(LoginDto request) {
                     var user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User Not Found"));
     
                     boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!isAuthenticated) {
-            throw new RuntimeException("Unauthorized");
+            throw new RuntimeException("Password did not match");
         }
 
-        return generateToken(request.getEmail());
+        return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 
-    private String generateToken(String email) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(email)
-                .issuer("SoundVerse.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
-                .claim("customClaim", "khanh")
+    private String generateToken(Integer id, String email, String username, UserRole role) {
+            JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+            JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                    .issuer("SoundVerse.com")
+                    .issueTime(new Date())
+                    .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()))
+                    .claim("id", String.valueOf(id))
+                    .claim("email", email)
+                    .claim("username", username)
+                    .claim("role", role)
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -79,7 +84,7 @@ public class AuthService {
         }
     }
 
-    public User signup(RegisterUserDto input) {
+    public String signup(RegisterUserDto input) {
         if (userRepository.existsByEmail(input.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
@@ -90,10 +95,12 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-        user.setEnabled(false);
+        user.setStatus(UserStatus.PENDING);
+        user.setRole(UserRole.USER);
 
         sendVerificationEmail(user);
-        return userRepository.save(user);
+        userRepository.save(user);
+        return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 
     public void verifyUser(VerifiDto input) {
@@ -108,7 +115,7 @@ public class AuthService {
             throw new RuntimeException("Invalid verification code");
         }
 
-        user.setEnabled(true);
+        user.setStatus(UserStatus.ACTIVE);
         user.setVerificationCode(null);
         user.setVerificationCodeExpiresAt(null);
         userRepository.save(user);
@@ -117,7 +124,7 @@ public class AuthService {
     public void resendVerificationCode(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.isEnabled()) {
+        if (user.getStatus() == UserStatus.ACTIVE) {
             throw new RuntimeException("Account is already verified");
         }
 
@@ -154,7 +161,7 @@ public class AuthService {
         return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 
-    public String authenticate(LoginDto request) {
-        throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
-    }
+    // public String authenticate(LoginDto request) {
+    //     throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
+    // }
 }

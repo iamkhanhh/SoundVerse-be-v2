@@ -59,6 +59,28 @@ public class S3Service {
     }
   }
 
+  public String createPresignedUrlForThumbnail(String fileName, Integer user_id) {
+    try (S3Presigner presigner = getPresigner()) {
+      String newFileName = generateFileName(fileName);
+      String objectKey = user_id + "/" + newFileName; 
+      String contentType = getContentType(fileName);
+
+      PutObjectRequest objectRequest = PutObjectRequest.builder()
+          .bucket(bucketName)
+          .key(objectKey)
+          .contentType(contentType)
+          .build();
+
+      PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+          .signatureDuration(Duration.ofMinutes(10))
+          .putObjectRequest(objectRequest)
+          .build();
+
+      PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
+      return presignedRequest.url().toString();
+    }
+  }
+
   public String generateFileName(String name) {
     name = name.replaceAll("\\s+", "_").trim();
 
@@ -71,5 +93,18 @@ public class S3Service {
     String uniqueID = UUID.randomUUID().toString();
 
     return baseName + "-" + timeStamp + "-" + uniqueID + extension;
+  }
+
+  private String getContentType(String fileName) {
+    if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+        return "image/jpeg";
+    } else if (fileName.endsWith(".png")) {
+        return "image/png";
+    } else if (fileName.endsWith(".gif")) {
+        return "image/gif";
+    } else if (fileName.endsWith(".webp")) {
+        return "image/webp";
+    }
+    return "application/octet-stream";
   }
 }

@@ -1,5 +1,7 @@
 package com.TLU.SoundVerse.entity;
 
+import com.TLU.SoundVerse.enums.MusicStatus;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,11 +25,11 @@ public class Music {
 
     private Integer albumsId;
 
-    private Integer status;
+    private MusicStatus status;
 
     private Integer genreId;
 
-    private Integer lenghth;
+    private Integer length;
 
     private String filePath;
 }

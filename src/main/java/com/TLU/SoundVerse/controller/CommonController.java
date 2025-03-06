@@ -35,4 +35,18 @@ public class CommonController {
     apiResponse.setData(url);
     return apiResponse;
   }
+
+  @PostMapping("/generate-thumbnail-presigned-url")
+  ApiResponse<String> createPresignedUrlForThumbnail(HttpServletRequest request, @RequestBody GetPresignedUrlForUploadDto dto) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
+    String url = s3Service.createPresignedUrlForThumbnail(dto.getFileName(), id);
+
+    ApiResponse<String> apiResponse = new ApiResponse<String>();
+    apiResponse.setStatus("success");
+    apiResponse.setMessage("Generate presigned url for upload thumbnail successfilly");
+    apiResponse.setData(url);
+    return apiResponse;
+  }
 }

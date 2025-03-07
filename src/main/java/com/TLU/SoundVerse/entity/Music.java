@@ -1,5 +1,10 @@
 package com.TLU.SoundVerse.entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.TLU.SoundVerse.enums.MusicStatus;
 
 import jakarta.persistence.Entity;
@@ -32,4 +37,10 @@ public class Music {
     private Integer length;
 
     private String filePath;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

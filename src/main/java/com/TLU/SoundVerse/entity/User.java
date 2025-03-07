@@ -3,6 +3,9 @@ package com.TLU.SoundVerse.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.TLU.SoundVerse.enums.UserRole;
 import com.TLU.SoundVerse.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -49,4 +52,10 @@ public class User {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dob;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

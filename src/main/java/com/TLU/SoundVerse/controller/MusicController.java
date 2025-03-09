@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.TLU.SoundVerse.dto.request.GetPresignedUrlForUploadDto;
+import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
-import com.TLU.SoundVerse.service.S3Service;
+import com.TLU.SoundVerse.entity.Music;
+import com.TLU.SoundVerse.service.MusicService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +22,20 @@ import lombok.AccessLevel;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MusicController {
-  S3Service s3Service;
+  MusicService musicService;
 
   @PostMapping
-  ApiResponse<String> createMusic(HttpServletRequest request, @RequestBody GetPresignedUrlForUploadDto dto) {
+  ApiResponse<Music> createMusic(HttpServletRequest request, @RequestBody CreateMusicDto createMusicDto) {
     @SuppressWarnings("unchecked")
     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
     Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    String url = s3Service.createPresignedUrl(dto.getFileName(), id);
+    System.out.println(createMusicDto);
+    Music music = musicService.createMusic(createMusicDto, id);
 
-    ApiResponse<String> apiResponse = new ApiResponse<String>();
+    ApiResponse<Music> apiResponse = new ApiResponse<Music>();
     apiResponse.setStatus("success");
-    apiResponse.setMessage("Generate presigned url for upload successfilly");
-    apiResponse.setData(url);
+    apiResponse.setMessage("Upload Music successfilly");
+    apiResponse.setData(music);
     return apiResponse;
   }
 }

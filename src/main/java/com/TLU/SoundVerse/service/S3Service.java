@@ -40,8 +40,7 @@ public class S3Service {
 
   public String createPresignedUrl(String fileName, Integer user_id) {
     try (S3Presigner presigner = getPresigner()) {
-      String newFileName = generateFileName(fileName);
-      String objectKey = user_id + "/" + newFileName; 
+      String objectKey = user_id + "/" + fileName; 
 
       PutObjectRequest objectRequest = PutObjectRequest.builder()
           .bucket(bucketName)
@@ -61,9 +60,9 @@ public class S3Service {
 
   public String createPresignedUrlForThumbnail(String fileName, Integer user_id) {
     try (S3Presigner presigner = getPresigner()) {
-      String newFileName = generateFileName(fileName);
-      String objectKey = user_id + "/" + newFileName; 
+      String objectKey = user_id + "/thumbnails/" + fileName; 
       String contentType = getContentType(fileName);
+      System.out.println(contentType);
 
       PutObjectRequest objectRequest = PutObjectRequest.builder()
           .bucket(bucketName)

@@ -34,7 +34,7 @@ public class Music {
 
     private Integer genreId;
 
-    private Integer length;
+    private Float length;
 
     private String filePath;
 

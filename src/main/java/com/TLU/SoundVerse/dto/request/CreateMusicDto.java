@@ -19,5 +19,7 @@ public class CreateMusicDto {
 
   Integer genreId;
 
-  Integer length;
+  Float length;
+
+  String filePath;
 }

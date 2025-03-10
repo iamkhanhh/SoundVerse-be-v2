@@ -97,6 +97,8 @@ public class AuthService {
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setStatus(UserStatus.PENDING);
         user.setRole(UserRole.USER);
+        user.setGender(input.getGender());
+        user.setFullName(input.getFullName());
 
         sendVerificationEmail(user);
         userRepository.save(user);

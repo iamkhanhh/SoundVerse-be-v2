@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -76,6 +79,23 @@ public class S3Service {
           .build();
 
       PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
+      return presignedRequest.url().toString();
+    }
+  }
+
+  public String getS3Url(String fileName) {
+    try (S3Presigner presigner = getPresigner()) {
+      GetObjectRequest objectRequest = GetObjectRequest.builder()
+          .bucket(bucketName)
+          .key(fileName)
+          .build();
+
+      GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+          .signatureDuration(Duration.ofHours(12))
+          .getObjectRequest(objectRequest)
+          .build();
+
+      PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
       return presignedRequest.url().toString();
     }
   }

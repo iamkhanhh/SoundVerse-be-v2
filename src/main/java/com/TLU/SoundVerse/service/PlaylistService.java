@@ -1,12 +1,14 @@
 package com.TLU.SoundVerse.service;
 
-import com.TLU.SoundVerse.dto.request.MusicOfPlaylistDto;
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
+import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 import com.TLU.SoundVerse.entity.Playlist;
+import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.PlaylistRepository;
+import com.TLU.SoundVerse.repository.MusicRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
+    private final MusicRepository musicRepository;
 
     
     public ApiResponse<List<Playlist>> getUserPlaylists(HttpServletRequest request) {
@@ -28,8 +31,8 @@ public class PlaylistService {
         if (userId == null) {
             return ApiResponse.<List<Playlist>>builder()
                 .code(400)
-                .message("Không tìm thấy User ID")
-                .status("FAILED")
+                .message("User ID not found")
+                .status("failed")
                 .data(null)
                 .build();
         }
@@ -37,41 +40,39 @@ public class PlaylistService {
         List<Playlist> playlists = playlistRepository.findByUserIdAndIsDeleted(userId, 0);
         return ApiResponse.<List<Playlist>>builder()
             .code(200)
-            .message("Lấy danh sách Playlist thành công")
-            .status("SUCCESS")
+            .message("Successfully fetched playlists")
+            .status("success")
             .data(playlists)
             .build();
     }
 
-  
+    
     public ApiResponse<Playlist> createPlaylist(HttpServletRequest request, PlaylistDto dto) {
         Integer userId = getUserIdFromRequest(request);
 
         if (userId == null) {
             return ApiResponse.<Playlist>builder()
                 .code(400)
-                .message("Không tìm thấy User ID")
-                .status("FAILED")
+                .message("User ID not found")
+                .status("failed")
                 .build();
         }
 
-        Playlist newPlaylist = new Playlist();
-        newPlaylist.setTitle(dto.getTitle());
-        newPlaylist.setDescription(dto.getDescription());
-        newPlaylist.setUserId(userId);
-        newPlaylist.setThumbnail(dto.getThumbnail());
-        newPlaylist.setIsDeleted(0);
+        Playlist newPlaylist = Playlist.builder()
+            .title(dto.getTitle())
+            .description(dto.getDescription())
+            .thumbnail(dto.getThumbnail())
+            .build();
 
         playlistRepository.save(newPlaylist);
 
         return ApiResponse.<Playlist>builder()
             .code(201)
-            .message("Tạo Playlist thành công")
-            .status("SUCCESS")
+            .message("Playlist created successfully")
+            .status("success")
             .data(newPlaylist)
             .build();
     }
-
 
     public ApiResponse<String> deletePlaylist(HttpServletRequest request, Integer playlistId) {
         Integer userId = getUserIdFromRequest(request);
@@ -79,8 +80,8 @@ public class PlaylistService {
         if (userId == null) {
             return ApiResponse.<String>builder()
                 .code(400)
-                .message("Không tìm thấy User ID")
-                .status("FAILED")
+                .message("User ID not found")
+                .status("failed")
                 .build();
         }
 
@@ -88,61 +89,72 @@ public class PlaylistService {
         if (optionalPlaylist.isEmpty() || !optionalPlaylist.get().getUserId().equals(userId)) {
             return ApiResponse.<String>builder()
                 .code(404)
-                .message("Playlist không tồn tại hoặc không thuộc về bạn")
-                .status("FAILED")
+                .message("Playlist not found or not owned by you")
+                .status("failed")
                 .build();
         }
 
         Playlist playlist = optionalPlaylist.get();
-        playlist.setIsDeleted(1); 
+        playlist.setIsDeleted(1);
         playlistRepository.save(playlist);
 
         return ApiResponse.<String>builder()
             .code(200)
-            .message("Xoá Playlist thành công")
-            .status("SUCCESS")
+            .message("Playlist deleted successfully")
+            .status("success")
             .build();
     }
-   
-    public ApiResponse<List<MusicOfPlaylistDto>> getMusicsInPlaylist(Integer playlistId) {
-        List<MusicsOfPlaylist> musics = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
 
-        List<MusicOfPlaylistDto> musicDtos = musics.stream().map(music -> {
-            MusicOfPlaylistDto dto = new MusicOfPlaylistDto();
-            dto.setAlbumsId(music.getAlbumsId());
-            dto.setMusicId(music.getMusicId());
-            return dto;
-        }).toList();
+    
+    public ApiResponse<List<CreateMusicDto>> getMusicsInPlaylist(Integer playlistId) {
+        List<MusicsOfPlaylist> musicsInPlaylist = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
+        List<Integer> musicIds = musicsInPlaylist.stream()
+            .map(MusicsOfPlaylist::getMusicId)
+            .toList();
 
-        return ApiResponse.<List<MusicOfPlaylistDto>>builder()
+        List<Music> musics = musicRepository.findAllById(musicIds);
+
+        List<CreateMusicDto> musicDtos = musics.stream().map(music ->
+            CreateMusicDto.builder()
+                .title(music.getTitle())
+                .description(music.getDescription())
+                .thumbnail(music.getThumbnail())
+                .albumsId(music.getAlbumsId())
+                .genreId(music.getGenreId())
+                .length(music.getLength())
+                .filePath(music.getFilePath())
+                .build()
+        ).toList();
+
+        return ApiResponse.<List<CreateMusicDto>>builder()
             .code(200)
-            .message("Lấy danh sách bài hát thành công")
-            .status("SUCCESS")
+            .message("Successfully fetched playlist songs")
+            .status("success")
             .data(musicDtos)
             .build();
     }
 
-    public ApiResponse<String> removeMusicFromPlaylist(MusicOfPlaylistDto dto) {
-        musicsOfPlaylistRepository.deleteByAlbumsIdAndMusicId(dto.getAlbumsId(), dto.getMusicId());
+    public ApiResponse<String> removeMusicFromPlaylist(Integer playlistId, Integer musicId) {
+        musicsOfPlaylistRepository.deleteByAlbumsIdAndMusicId(playlistId, musicId);
 
         return ApiResponse.<String>builder()
             .code(200)
-            .message("Xoá bài hát khỏi Playlist thành công")
-            .status("SUCCESS")
+            .message("Successfully removed song from playlist")
+            .status("success")
             .build();
     }
 
-    public ApiResponse<String> addMusicToPlaylist(MusicOfPlaylistDto dto) {
+    public ApiResponse<String> addMusicToPlaylist(Integer playlistId, Integer musicId) {
         MusicsOfPlaylist newEntry = new MusicsOfPlaylist();
-        newEntry.setAlbumsId(dto.getAlbumsId());
-        newEntry.setMusicId(dto.getMusicId());
+        newEntry.setAlbumsId(playlistId);
+        newEntry.setMusicId(musicId);
 
         musicsOfPlaylistRepository.save(newEntry);
 
         return ApiResponse.<String>builder()
             .code(201)
-            .message("Thêm bài hát vào Playlist thành công")
-            .status("SUCCESS")
+            .message("Successfully added song to playlist")
+            .status("success")
             .build();
     }
 

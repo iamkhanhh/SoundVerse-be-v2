@@ -1,19 +1,21 @@
 package com.TLU.SoundVerse.dto.request;
-import java.time.LocalDateTime;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
+import java.util.List;
 
 @Data
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlaylistDto {
-    private String title;
+    String title;
+    
+    String description;
 
-    private String description;
+    String thumbnail;
 
-    private String thumbnail;
-
-    private Integer userId;
-
-    private LocalDateTime createdAt;
-
-    private Integer isDeleted;
+    List<CreateMusicDto> musics;
 }
+    

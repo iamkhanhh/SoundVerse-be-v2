@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.TLU.SoundVerse.entity.Music;
 
 @Repository
-public interface MusicRepository extends JpaRepository<Music, Long> {
+public interface MusicRepository extends JpaRepository<Music, Integer> {
     List<Music> findByTitleContainingIgnoreCase(String keyword);
 }

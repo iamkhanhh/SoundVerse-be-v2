@@ -94,22 +94,42 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyUser(@RequestBody VerifiDto verifyUserDto) {
+    public ResponseEntity<ApiResponse<?>> verifyUser(@RequestBody VerifiDto verifyUserDto) {
         try {
             authService.verifyUser(verifyUserDto);
-            return ResponseEntity.ok("Account verified successfully");
+            ApiResponse<?> response = ApiResponse.<Void>builder()
+                .code(200)
+                .status("success")
+                .message("Account verified successfully")
+                .build();
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
+                .code(400)
+                .status("failed")
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+    public ResponseEntity<ApiResponse<?>> resendVerificationCode(@RequestParam String email) {
         try {
             authService.resendVerificationCode(email);
-            return ResponseEntity.ok("Verification code sent");
+            ApiResponse<?> response = ApiResponse.<Void>builder()
+                .code(200)
+                .status("success")
+                .message("Verification code sent")
+                .build();
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
+                .code(400)
+                .status("failed")
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }

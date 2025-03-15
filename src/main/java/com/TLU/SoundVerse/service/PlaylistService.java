@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +25,11 @@ public class PlaylistService {
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
     private final MusicRepository musicRepository;
 
-    
-    public ApiResponse<List<Playlist>> getUserPlaylists(HttpServletRequest request) {
+    public ApiResponse<List<PlaylistDto>> getUserPlaylists(HttpServletRequest request) {
         Integer userId = getUserIdFromRequest(request);
 
         if (userId == null) {
-            return ApiResponse.<List<Playlist>>builder()
+            return ApiResponse.<List<PlaylistDto>>builder()
                 .code(400)
                 .message("User ID not found")
                 .status("failed")
@@ -38,20 +38,23 @@ public class PlaylistService {
         }
 
         List<Playlist> playlists = playlistRepository.findByUserIdAndIsDeleted(userId, 0);
-        return ApiResponse.<List<Playlist>>builder()
+        List<PlaylistDto> playlistDtos = playlists.stream()
+            .map(this::convertToDto)
+            .collect(Collectors.toList());
+
+        return ApiResponse.<List<PlaylistDto>>builder()
             .code(200)
             .message("Successfully fetched playlists")
             .status("success")
-            .data(playlists)
+            .data(playlistDtos)
             .build();
     }
 
-    
-    public ApiResponse<Playlist> createPlaylist(HttpServletRequest request, PlaylistDto dto) {
+    public ApiResponse<PlaylistDto> createPlaylist(HttpServletRequest request, PlaylistDto dto) {
         Integer userId = getUserIdFromRequest(request);
 
         if (userId == null) {
-            return ApiResponse.<Playlist>builder()
+            return ApiResponse.<PlaylistDto>builder()
                 .code(400)
                 .message("User ID not found")
                 .status("failed")
@@ -62,15 +65,17 @@ public class PlaylistService {
             .title(dto.getTitle())
             .description(dto.getDescription())
             .thumbnail(dto.getThumbnail())
+            .userId(userId)
             .build();
 
         playlistRepository.save(newPlaylist);
+        PlaylistDto responseDto = convertToDto(newPlaylist);
 
-        return ApiResponse.<Playlist>builder()
+        return ApiResponse.<PlaylistDto>builder()
             .code(201)
             .message("Playlist created successfully")
             .status("success")
-            .data(newPlaylist)
+            .data(responseDto)
             .build();
     }
 
@@ -105,7 +110,6 @@ public class PlaylistService {
             .build();
     }
 
-    
     public ApiResponse<List<CreateMusicDto>> getMusicsInPlaylist(Integer playlistId) {
         List<MusicsOfPlaylist> musicsInPlaylist = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
         List<Integer> musicIds = musicsInPlaylist.stream()
@@ -155,6 +159,14 @@ public class PlaylistService {
             .code(201)
             .message("Successfully added song to playlist")
             .status("success")
+            .build();
+    }
+
+    private PlaylistDto convertToDto(Playlist playlist) {
+        return PlaylistDto.builder()
+            .title(playlist.getTitle())
+            .description(playlist.getDescription())
+            .thumbnail(playlist.getThumbnail())
             .build();
     }
 

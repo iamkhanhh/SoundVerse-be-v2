@@ -2,12 +2,15 @@ package com.TLU.SoundVerse.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.mapper.UserMapper;
@@ -61,5 +64,15 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
     }
-    
+
+    public Map<String, String> getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                             .map(user -> {
+                                Map<String, String> response = new HashMap<>();
+                                 response.put("id", String.valueOf(user.getId()));
+                                 response.put("username", user.getUsername());
+                                 return response;
+                             })
+                             .orElseThrow(() -> new RuntimeException("User not found!"));
+    }    
 }

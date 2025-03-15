@@ -1,5 +1,8 @@
 package com.TLU.SoundVerse.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.entity.Genre;
@@ -25,5 +28,16 @@ public class GenreService {
 
     genreRepository.save(new_genre);
     return new_genre.getTitle();
+  }
+
+  public List<Genre> getGenres() {
+    List<Genre> genres = genreRepository.findAll();
+    return genres;
+  }
+
+  public String getGenreById(Integer genreId) {
+    Genre genre = genreRepository.findById(genreId)
+                    .orElseThrow(() -> new RuntimeException("Genre not found!"));
+    return genre.getTitle();
   }
 }

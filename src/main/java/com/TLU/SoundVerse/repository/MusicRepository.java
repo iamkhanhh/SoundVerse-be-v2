@@ -11,5 +11,6 @@ import com.TLU.SoundVerse.entity.Music;
 @Repository
 public interface MusicRepository extends JpaRepository<Music, Integer> {
     List<Music> findByTitleContainingIgnoreCase(String keyword);
-    List<MusicResponse> findByArtistId(Integer artistId);
+    List<Music> findByArtistId(Integer artistId);
+    List<Music> findByAlbumsId(Integer albumsId);
 }

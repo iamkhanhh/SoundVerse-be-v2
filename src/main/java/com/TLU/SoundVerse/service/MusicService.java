@@ -1,6 +1,8 @@
 package com.TLU.SoundVerse.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -42,31 +44,34 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusic(Integer userId) {
-    List<MusicResponse> musicList = musicRepository.findByArtistId(userId);
+    List<Music> musicList = musicRepository.findByArtistId(userId);
 
-    // musicList.forEach(music -> {
-    // music.setThumbnail(s3Service.getS3Url(music.getThumbnail()));
-    // music.setFilePath(s3Service.getS3Url(music.getFilePath()));
-    // });
-
-    return musicList;
+    return musicList.stream()
+                    .map(this::toMusicResponse)
+                    .collect(Collectors.toList());
   }
 
   public List<MusicResponse> getMusicByAlbumId(Integer albumsId) {
-
+    List<Music> musicList = musicRepository.findByAlbumsId(albumsId);
+    
+    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
   public MusicResponse toMusicResponse(Music music) {
+
+    Map<String, String> user = userService.getUserById(music.getArtistId());
+
     return MusicResponse.builder()
         .id(music.getId())
         .title(music.getTitle())
         .description(music.getDescription())
-        .thumbnail(s3Service.getS3Url(music.getThumbnail()))
+        .thumbnail(music.getThumbnail())
         .albumsId(music.getAlbumsId())
         .genre(genreService.getGenreById(music.getGenreId()))
-        .artist(userService.getUserById(music.getArtistId()))
+        .artist(user.get("username"))
+        .artistId(Integer.parseInt(user.get("id")))
         .length(music.getLength())
-        .filePath(s3Service.getS3Url(music.getFilePath()))
+        .filePath(music.getFilePath())
         .createdAt(music.getCreatedAt())
         .build();
   }

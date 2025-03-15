@@ -1,6 +1,7 @@
 package com.TLU.SoundVerse.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 public class AlbumService {
   AlbumRepository albumRepository;
   MusicService musicService;
+  UserService userService;
 
   public Album create(CreateAlbumDto createAlbumDto, Integer userId) {
     Album newAlbum = new Album();
@@ -40,16 +42,23 @@ public class AlbumService {
   public List<AlbumResponse> getAlbums() {
     List<Album> albums = albumRepository.findAll();
 
-    return albums.stream().map(album -> 
-            new AlbumResponse(
-                album.getId(),
-                album.getTitle(),
-                album.getDescription(),
-                album.getThumbnail(),
-                
-                album.getCreatedAt()
-            )
-        ).toList();
+    return albums.stream().map(album -> toAlbumResponse(album)).toList();
   }
 
+  public AlbumResponse toAlbumResponse(Album album) {
+
+    Map<String, String> user = userService.getUserById(album.getArtistId());
+
+    return AlbumResponse.builder()
+        .id(album.getId())
+        .title(album.getTitle())
+        .description(album.getDescription())
+        .thumbnail(album.getThumbnail())
+        .artist(user.get("username"))
+        .artistId(Integer.parseInt(user.get("id")))
+        .listOfMusic(album.getListOfMusic())
+        .songs(musicService.getMusicByAlbumId(album.getId()))
+        .createdAt(album.getCreatedAt())
+        .build();
+  }
 }

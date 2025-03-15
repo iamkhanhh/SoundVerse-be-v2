@@ -2,6 +2,8 @@ package com.TLU.SoundVerse.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,12 +65,14 @@ public class UserService {
         }
     }
 
-    public UserResponse getUserById(Integer userId) {
-        User user = userRepository.findById(userId)
-                                        .orElseThrow(() -> new RuntimeException("Genre not found!"));;
-        
-        UserResponse response = userMapper.toUserResponse(user);
-
-        return response;
-    }
+    public Map<String, String> getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                             .map(user -> {
+                                Map<String, String> response = new HashMap<>();
+                                 response.put("id", String.valueOf(user.getId()));
+                                 response.put("username", user.getUsername());
+                                 return response;
+                             })
+                             .orElseThrow(() -> new RuntimeException("User not found!"));
+    }    
 }

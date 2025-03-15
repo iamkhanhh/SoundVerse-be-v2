@@ -20,8 +20,6 @@ public class Artist {
 
     private Integer userId;
 
-    private Integer genreId;
-
     private Integer listOfMusic;
 
     private Integer albums;

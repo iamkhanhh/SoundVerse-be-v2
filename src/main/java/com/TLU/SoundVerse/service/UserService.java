@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.mapper.UserMapper;
@@ -61,5 +62,13 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
     }
-    
+
+    public UserResponse getUserById(Integer userId) {
+        User user = userRepository.findById(userId)
+                                        .orElseThrow(() -> new RuntimeException("Genre not found!"));;
+        
+        UserResponse response = userMapper.toUserResponse(user);
+
+        return response;
+    }
 }

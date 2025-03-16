@@ -60,6 +60,11 @@ public class MusicController {
     public List<Music> getRandomMusicByFollowedArtists(@PathVariable Integer userId) {
         return musicService.getRandomMusicByFollowedArtists(userId);
   }
+
+  @GetMapping("/top-liked")
+  public List<Music> getTopLikedMusic() {
+      return musicService.getTopLikedMusic();
+  }
 }
 
 

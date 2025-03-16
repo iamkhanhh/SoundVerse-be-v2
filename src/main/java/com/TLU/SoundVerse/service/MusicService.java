@@ -13,6 +13,7 @@ import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.FollowerRepository;
+import com.TLU.SoundVerse.repository.LikeRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 
 import lombok.AccessLevel;
@@ -25,6 +26,7 @@ import lombok.experimental.FieldDefaults;
 public class MusicService {
   MusicRepository musicRepository;
   FollowerRepository followerRepository;
+  LikeRepository likeRepository;
   S3Service s3Service;
   GenreService genreService;
   UserService userService;
@@ -106,5 +108,15 @@ public class MusicService {
 
     Collections.shuffle(musicList);
     return musicList.stream().limit(6).collect(Collectors.toList());
+}
+
+public List<Music> getTopLikedMusic() {
+  List<Object[]> topLikedMusic = likeRepository.findTopLikedMusic();
+  List<Integer> topMusicIds = topLikedMusic.stream()
+          .map(obj -> (Integer) obj[0])
+          .limit(6)
+          .collect(Collectors.toList());
+
+  return musicRepository.findAllById(topMusicIds);
 }
 }

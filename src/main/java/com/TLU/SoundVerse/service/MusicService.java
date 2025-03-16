@@ -1,5 +1,6 @@
 package com.TLU.SoundVerse.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
@@ -11,6 +12,7 @@ import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
+import com.TLU.SoundVerse.repository.FollowerRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 
 import lombok.AccessLevel;
@@ -22,9 +24,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MusicService {
   MusicRepository musicRepository;
+  FollowerRepository followerRepository;
   S3Service s3Service;
   GenreService genreService;
   UserService userService;
+  
 
   public Music createMusic(CreateMusicDto createMusicDto, Integer user_id) {
     Music newMusic = new Music();
@@ -58,9 +62,7 @@ public class MusicService {
   }
 
   public MusicResponse toMusicResponse(Music music) {
-
     Map<String, String> user = userService.getUserById(music.getArtistId());
-
     return MusicResponse.builder()
         .id(music.getId())
         .title(music.getTitle())
@@ -75,4 +77,34 @@ public class MusicService {
         .createdAt(music.getCreatedAt())
         .build();
   }
+
+  public List<Music> getRandomMusicByFollowedArtists(Integer userId) {
+  
+    List<Integer> followedArtistIds = followerRepository.findByUserId(userId)
+            .stream()
+            .map(f -> f.getArtistId())
+            .collect(Collectors.toList());
+
+   
+    List<Music> musicList = musicRepository.findAll()
+            .stream()
+            .filter(m -> followedArtistIds.contains(m.getArtistId()))
+            .collect(Collectors.toList());
+
+    if (musicList.size() < 6) {
+        List<Music> allMusic = musicRepository.findAll();
+        Collections.shuffle(allMusic);
+        for (Music music : allMusic) {
+            if (!musicList.contains(music)) {
+                musicList.add(music);
+            }
+            if (musicList.size() >= 6) {
+                break;
+            }
+        }
+    }
+
+    Collections.shuffle(musicList);
+    return musicList.stream().limit(6).collect(Collectors.toList());
+}
 }

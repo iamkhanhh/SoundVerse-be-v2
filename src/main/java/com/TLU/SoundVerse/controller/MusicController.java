@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,4 +55,11 @@ public class MusicController {
     apiResponse.setData(music);
     return apiResponse;
   }
+
+   @GetMapping("/random/{userId}")
+    public List<Music> getRandomMusicByFollowedArtists(@PathVariable Integer userId) {
+        return musicService.getRandomMusicByFollowedArtists(userId);
+  }
 }
+
+

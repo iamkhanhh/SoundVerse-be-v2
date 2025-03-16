@@ -96,7 +96,7 @@ public class AuthService {
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         user.setStatus(UserStatus.PENDING);
-        user.setRole(UserRole.USER);
+        user.setRole(input.getIsArtist() ? UserRole.ARTIST : UserRole.USER);
         user.setGender(input.getGender());
         user.setFullName(input.getFullName());
 

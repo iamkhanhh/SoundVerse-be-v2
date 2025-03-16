@@ -5,13 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlaylistDto {
-    String title;
-    String description;
-    String thumbnail;
-
+public class FollowerDto {
+    private Integer id;
+    private Integer userId;
+    private Integer artistId;
 }
-    

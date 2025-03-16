@@ -1,14 +1,13 @@
 package com.TLU.SoundVerse.service;
 
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
-import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
+import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.dto.response.PlaylistResponse;
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 import com.TLU.SoundVerse.entity.Playlist;
-import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.PlaylistRepository;
-import com.TLU.SoundVerse.repository.MusicRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,9 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
-    private final MusicRepository musicRepository;
+    MusicService musicService;
+    UserService userService;
+    S3Service s3Service;
 
     public ApiResponse<List<PlaylistDto>> getUserPlaylists(HttpServletRequest request) {
         Integer userId = getUserIdFromRequest(request);
@@ -110,33 +111,25 @@ public class PlaylistService {
             .build();
     }
 
-    public ApiResponse<List<CreateMusicDto>> getMusicsInPlaylist(Integer playlistId) {
-        List<MusicsOfPlaylist> musicsInPlaylist = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
-        List<Integer> musicIds = musicsInPlaylist.stream()
-            .map(MusicsOfPlaylist::getMusicId)
-            .toList();
+    public PlaylistResponse getMusicsInPlaylist(Integer playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+            .orElseThrow(() -> new RuntimeException("Playlist not found"));
 
-        List<Music> musics = musicRepository.findAllById(musicIds);
+        return toPlaylistResponse(playlist);
+    }
 
-        List<CreateMusicDto> musicDtos = musics.stream().map(music ->
-            CreateMusicDto.builder()
-                .title(music.getTitle())
-                .description(music.getDescription())
-                .thumbnail(music.getThumbnail())
-                .albumsId(music.getAlbumsId())
-                .genreId(music.getGenreId())
-                .length(music.getLength())
-                .filePath(music.getFilePath())
-                .build()
-        ).toList();
+    public PlaylistResponse toPlaylistResponse(Playlist playlist) {
+        List<MusicResponse> songs = musicService.getMusicsByPlaylsitId(playlist.getId());
 
-        return ApiResponse.<List<CreateMusicDto>>builder()
-            .code(200)
-            .message("Successfully fetched playlist songs")
-            .status("success")
-            .data(musicDtos)
+        return PlaylistResponse.builder()
+            .id(playlist.getId())
+            .title(playlist.getTitle())
+            .thumbnail(s3Service.getS3Url(playlist.getThumbnail()))
+            .songs(songs)
+            .createdAt(playlist.getCreatedAt())
             .build();
     }
+
 
     public ApiResponse<String> removeMusicFromPlaylist(Integer playlistId, Integer musicId) {
         musicsOfPlaylistRepository.deleteByAlbumsIdAndMusicId(playlistId, musicId);

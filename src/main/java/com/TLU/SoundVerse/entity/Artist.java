@@ -13,14 +13,13 @@ import lombok.Data;
  
 @Entity
 @Data
+
 public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer userId;
-
-    private Integer genreId;
 
     private Integer listOfMusic;
 

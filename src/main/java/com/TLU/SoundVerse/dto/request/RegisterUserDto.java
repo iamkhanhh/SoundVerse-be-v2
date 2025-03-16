@@ -36,4 +36,6 @@ public class RegisterUserDto {
     String country;
 
     String fullName;
+
+    Boolean isArtist;
 }

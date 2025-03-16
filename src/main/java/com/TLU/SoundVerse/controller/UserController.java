@@ -48,12 +48,12 @@ public class UserController {
   }
 
   // @GetMapping("/{userId}")
-  // ApiResponse<User> getUserById(@PathVariable String userId) {
+  // ApiResponse<User> getUsernameAndIdById(@PathVariable String userId) {
   //   ApiResponse<User> apiResponse = new ApiResponse<User>();
 
   //   apiResponse.setStatus("success");
   //   apiResponse.setMessage("Create user successfilly");
-  //   apiResponse.setData(userService.getUserbyId(userId));
+  //   apiResponse.setData(userService.getUsernameAndIdById(userId));
   //   return apiResponse;
   // }
 

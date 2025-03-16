@@ -76,7 +76,7 @@ public class CommonService {
                 .collect(Collectors.toList());
 
       
-        if (musicList.size() < 4) {
+        if (musicList.size() < 6) {
             List<Music> additionalMusic = musicRepository.findAll();
             Collections.shuffle(additionalMusic);
 
@@ -84,13 +84,13 @@ public class CommonService {
                 if (!musicList.contains(music)) {
                     musicList.add(music);
                 }
-                if (musicList.size() >= 4) {
+                if (musicList.size() >= 6) {
                     break;
                 }
             }
         }
 
         Collections.shuffle(musicList);
-        return musicList.stream().limit(4).collect(Collectors.toList());
+        return musicList.stream().limit(6).collect(Collectors.toList());
     }
 }

@@ -14,6 +14,8 @@ public class PlaylistResponse {
     
     List<MusicResponse> songs;
     
+    String thumbnail;
+    
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     LocalDateTime createdAt;
 }

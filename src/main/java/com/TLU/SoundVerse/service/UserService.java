@@ -10,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
-import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.mapper.UserMapper;

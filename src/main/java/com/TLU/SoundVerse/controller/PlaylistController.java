@@ -3,7 +3,6 @@ package com.TLU.SoundVerse.controller;
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.PlaylistResponse;
-import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

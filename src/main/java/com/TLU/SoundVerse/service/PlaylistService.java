@@ -24,6 +24,7 @@ public class PlaylistService {
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
     MusicService musicService;
     UserService userService;
+    S3Service s3Service;
 
     public ApiResponse<List<PlaylistDto>> getUserPlaylists(HttpServletRequest request) {
         Integer userId = getUserIdFromRequest(request);
@@ -123,6 +124,7 @@ public class PlaylistService {
         return PlaylistResponse.builder()
             .id(playlist.getId())
             .title(playlist.getTitle())
+            .thumbnail(s3Service.getS3Url(playlist.getThumbnail()))
             .songs(songs)
             .createdAt(playlist.getCreatedAt())
             .build();

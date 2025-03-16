@@ -15,7 +15,6 @@ import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.Music;
-import com.TLU.SoundVerse.service.AlbumService;
 import com.TLU.SoundVerse.service.CommonService;
 import com.TLU.SoundVerse.service.S3Service;
 

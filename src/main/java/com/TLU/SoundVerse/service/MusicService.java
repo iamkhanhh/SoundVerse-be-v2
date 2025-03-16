@@ -1,6 +1,5 @@
 package com.TLU.SoundVerse.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
-import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.MusicRepository;
@@ -71,7 +69,7 @@ public class MusicService {
         .id(music.getId())
         .title(music.getTitle())
         .description(music.getDescription())
-        .thumbnail(music.getThumbnail())
+        .thumbnail(s3Service.getS3Url(music.getThumbnail()))
         .albumsId(music.getAlbumsId())
         .genre(genreService.getGenreById(music.getGenreId()))
         .artist(user.get("username"))

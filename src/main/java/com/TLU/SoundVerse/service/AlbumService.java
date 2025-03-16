@@ -29,9 +29,10 @@ public class AlbumService {
   UserService userService;
 
   public Album create(CreateAlbumDto createAlbumDto, Integer userId) {
+    Integer artistId = userService.getArtistIdByUserId(userId);
     Album newAlbum = new Album();
 
-    newAlbum.setArtistId(userId);
+    newAlbum.setArtistId(artistId);
     newAlbum.setTitle(createAlbumDto.getTitle());
     newAlbum.setThumbnail(createAlbumDto.getThumbnail());
     newAlbum.setDescription(createAlbumDto.getDescription());
@@ -47,9 +48,20 @@ public class AlbumService {
     return albums.stream().map(album -> toAlbumResponse(album)).toList();
   }
 
+  public List<AlbumResponse> getMusic(Integer userId) {
+
+    Integer artistId = userService.getArtistIdByUserId(userId);
+
+    List<Album> musicList = albumRepository.findByArtistId(artistId);
+
+    return musicList.stream()
+                    .map(this::toAlbumResponse)
+                    .collect(Collectors.toList());
+  }
+
   public AlbumResponse toAlbumResponse(Album album) {
 
-    Map<String, String> user = userService.getUserById(album.getArtistId());
+    Map<String, String> user = userService.getUsernameAndIdById(album.getArtistId());
 
     return AlbumResponse.builder()
         .id(album.getId())

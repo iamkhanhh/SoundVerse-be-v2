@@ -10,9 +10,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
+import com.TLU.SoundVerse.dto.response.AlbumResponse;
+import com.TLU.SoundVerse.dto.response.ArtistResponse;
+import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.enums.UserStatus;
 import com.TLU.SoundVerse.mapper.UserMapper;
+import com.TLU.SoundVerse.repository.ArtistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -24,7 +29,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
+    ArtistRepository artistRepository;
     UserMapper userMapper;
+    AlbumService albumService;
+    MusicService musicService;
 
     public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -44,17 +52,18 @@ public class UserService {
     }
 
     // public User updateUser(String userId, UpdateUserDto updateUserDto) {
-    //     User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+    // User user = userRepository.findById(userId).orElseThrow(() -> new
+    // RuntimeException("User Not Found"));
 
-    //     usermapper.updateUser(user, updateUserDto);
+    // usermapper.updateUser(user, updateUserDto);
 
-    //     return usermapper.toUserResponseDto(userRepository.save(user));
+    // return usermapper.toUserResponseDto(userRepository.save(user));
     // }
 
     public void deleteUser(String userId) {
         Integer id = Integer.parseInt(userId);
         Optional<User> optionalUser = userRepository.findById(id);
-        
+
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setStatus(UserStatus.DELETED);
@@ -64,14 +73,49 @@ public class UserService {
         }
     }
 
-    public Map<String, String> getUserById(Integer userId) {
+    public Map<String, String> getUsernameAndIdById(Integer userId) {
         return userRepository.findById(userId)
-                             .map(user -> {
-                                Map<String, String> response = new HashMap<>();
-                                 response.put("id", String.valueOf(user.getId()));
-                                 response.put("username", user.getUsername());
-                                 return response;
-                             })
-                             .orElseThrow(() -> new RuntimeException("User not found!"));
-    }    
+                .map(user -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("id", String.valueOf(user.getId()));
+                    response.put("username", user.getUsername());
+                    return response;
+                })
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+    }
+
+    public User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found!"));
+    }
+
+    public Integer getArtistIdByUserId(Integer userId) {
+
+        Artist artist = artistRepository.findByUserId(userId);
+
+        return artist.getId();
+    }
+
+    public ArtistResponse toArtistResponse(Artist artist) {
+
+        User user = getUserById(artist.getUserId());
+
+        List<MusicResponse> musics = musicService.getMusic(user.getId());
+
+        List<AlbumResponse> albums  = albumService.getMusic(user.getId());
+
+        return ArtistResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .country(user.getCountry())
+                .profilePicImage(user.getProfilePicImage())
+                .fullName(user.getFullName())
+                .dob(user.getDob())
+                .songs(musics)
+                .albums(albums)
+                .createdAt(artist.getCreatedAt())
+                .build();
+    }
 }

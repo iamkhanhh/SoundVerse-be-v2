@@ -16,4 +16,6 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 
     @Query("SELECT COUNT(a) FROM Album a")
     Integer countAlbums();
+
+    List<Album> findByArtistId(Integer artistId);
 }

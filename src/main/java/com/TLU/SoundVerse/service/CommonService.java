@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.response.AlbumResponse;
+import com.TLU.SoundVerse.dto.response.ArtistResponse;
+import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.entity.Album;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.Music;
@@ -16,32 +18,22 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CommonService {
-    
+
     private final AlbumRepository albumRepository;
     private final FollowerRepository followerRepository;
     private final ArtistRepository artistRepository;
     private final LikeRepository likeRepository;
     private final MusicRepository musicRepository;
-
+    private final AlbumService albumService;
+    private final MusicService musicService;
+    private final UserService userService;
 
     public List<AlbumResponse> getRandomAlbums() {
         List<Album> albums = albumRepository.findRandomAlbums();
-        return albums.stream().map(this::toAlbumResponse).toList();
+        return albums.stream().map(album -> albumService.toAlbumResponse(album)).toList();
     }
 
-    private AlbumResponse toAlbumResponse(Album album) {
-        return AlbumResponse.builder()
-            .id(album.getId())
-            .title(album.getTitle())
-            .description(album.getDescription())
-            .thumbnail(album.getThumbnail())
-            .artistId(album.getArtistId())
-            .createdAt(album.getCreatedAt())
-            .build();
-    }
-
-
-    public List<Artist> getTopFollowedArtists() {
+    public List<ArtistResponse> getTopFollowedArtists() {
         List<Object[]> topArtists = followerRepository.findTopFollowedArtists();
 
         List<Integer> topArtistIds = topArtists.stream()
@@ -49,22 +41,23 @@ public class CommonService {
                 .limit(4)
                 .collect(Collectors.toList());
 
-        return artistRepository.findAllById(topArtistIds);
+        List<Artist> artists = artistRepository.findAllById(topArtistIds);
+        return artists.stream().map(artist -> userService.toArtistResponse(artist)).toList();
     }
 
-
-    public List<Music> getTopLikedMusic() {
+    public List<MusicResponse> getTopLikedMusic() {
         List<Object[]> topLikedMusic = likeRepository.findTopLikedMusic();
         List<Integer> topMusicIds = topLikedMusic.stream()
                 .map(obj -> (Integer) obj[0])
                 .limit(4)
                 .collect(Collectors.toList());
-      
-        return musicRepository.findAllById(topMusicIds);
+
+        List<Music> musics =  musicRepository.findAllById(topMusicIds);
+
+        return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
     }
 
-  
-    public List<Music> getRandomMusicByFollowedArtists(Integer userId) {
+    public List<MusicResponse> getRandomMusicByFollowedArtists(Integer userId) {
         List<Integer> followedArtistIds = followerRepository.findByUserId(userId)
                 .stream()
                 .map(f -> f.getArtistId())
@@ -75,7 +68,6 @@ public class CommonService {
                 .filter(m -> followedArtistIds.contains(m.getArtistId()))
                 .collect(Collectors.toList());
 
-      
         if (musicList.size() < 6) {
             List<Music> additionalMusic = musicRepository.findAll();
             Collections.shuffle(additionalMusic);
@@ -91,6 +83,7 @@ public class CommonService {
         }
 
         Collections.shuffle(musicList);
-        return musicList.stream().limit(6).collect(Collectors.toList());
+        List<Music> musics = musicList.stream().limit(6).collect(Collectors.toList());
+        return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
     }
 }

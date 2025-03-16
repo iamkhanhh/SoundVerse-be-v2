@@ -17,4 +17,6 @@ public interface ArtistRepository extends JpaRepository<Artist, Integer> {
         WHERE LOWER(u.full_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
     """, nativeQuery = true)
     List<Artist> findArtistsByUserFullName(@Param("keyword") String keyword);
+
+    Artist findByUserId(Integer userId);
 }

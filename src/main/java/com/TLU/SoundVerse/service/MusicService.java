@@ -27,11 +27,12 @@ public class MusicService {
   
 
   public Music createMusic(CreateMusicDto createMusicDto, Integer user_id) {
+    Integer artistId = userService.getArtistIdByUserId(user_id);
     Music newMusic = new Music();
 
     newMusic.setTitle(createMusicDto.getTitle());
     newMusic.setDescription(createMusicDto.getDescription());
-    newMusic.setArtistId(user_id);
+    newMusic.setArtistId(artistId);
     newMusic.setThumbnail(user_id + "/thumbnails/" + createMusicDto.getThumbnail());
     newMusic.setAlbumsId(createMusicDto.getAlbumsId());
     newMusic.setStatus(MusicStatus.PENDING);
@@ -44,7 +45,10 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusic(Integer userId) {
-    List<Music> musicList = musicRepository.findByArtistId(userId);
+
+    Integer artistId = userService.getArtistIdByUserId(userId);
+
+    List<Music> musicList = musicRepository.findByArtistId(artistId);
 
     return musicList.stream()
                     .map(this::toMusicResponse)
@@ -64,7 +68,7 @@ public class MusicService {
   }
 
   public MusicResponse toMusicResponse(Music music) {
-    Map<String, String> user = userService.getUserById(music.getArtistId());
+    Map<String, String> user = userService.getUsernameAndIdById(music.getArtistId());
     return MusicResponse.builder()
         .id(music.getId())
         .title(music.getTitle())

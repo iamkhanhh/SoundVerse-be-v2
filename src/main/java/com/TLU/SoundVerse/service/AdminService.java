@@ -20,10 +20,10 @@ public class AdminService {
 
         Map<String, Integer> stats = new HashMap<>();
         stats.put("totalUsers", userRepository.countUsers());
-        stats.put("newUsersThisMonth", userRepository.countNewUsersThisMonth(startOfMonth));
+        stats.put("totalUsersMonthlyMonthly", userRepository.countNewUsersThisMonth(startOfMonth));
         stats.put("totalArtists", userRepository.countArtists(UserRole.ARTIST));
-        stats.put("totalMusic", musicRepository.countMusic());
-        stats.put("newMusicThisMonth", musicRepository.countNewMusicThisMonth(startOfMonth));
+        stats.put("totalSongs", musicRepository.countMusic());
+        stats.put("totalSongsMonthly", musicRepository.countNewMusicThisMonth(startOfMonth));
         stats.put("totalAlbums", albumRepository.countAlbums());
 
         return stats;

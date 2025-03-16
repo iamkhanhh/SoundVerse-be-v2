@@ -42,7 +42,7 @@ public class AdminController {
         return apiResponse;
     }
 
-    @GetMapping("/statistics")
+    @GetMapping("/stats")
     public ApiResponse<Map<String, Integer>> getStatistics() {
         Map<String, Integer> stats = adminService.getStatistics();
         return new ApiResponse<>(200, "Get statistics successfully", "success", stats);

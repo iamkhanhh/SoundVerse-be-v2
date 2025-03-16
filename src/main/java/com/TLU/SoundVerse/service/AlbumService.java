@@ -61,4 +61,9 @@ public class AlbumService {
         .createdAt(album.getCreatedAt())
         .build();
   }
+
+  public List<AlbumResponse> getRandomAlbums() {
+    List<Album> albums = albumRepository.findRandomAlbums();
+    return albums.stream().map(this::toAlbumResponse).toList();
+}
 }

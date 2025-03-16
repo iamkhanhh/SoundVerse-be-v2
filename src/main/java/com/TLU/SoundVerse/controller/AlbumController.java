@@ -51,4 +51,10 @@ public class AlbumController {
     apiResponse.setData(albums);
     return apiResponse;
   }
+
+@GetMapping("/random")
+ApiResponse<List<AlbumResponse>> getRandomAlbums() {
+    List<AlbumResponse> albums = albumService.getRandomAlbums();
+    return new ApiResponse<>(200, "Get random albums successfully", "success", albums);
+}
 }

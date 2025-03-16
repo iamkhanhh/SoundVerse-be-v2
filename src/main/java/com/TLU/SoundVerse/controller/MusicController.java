@@ -55,15 +55,16 @@ public class MusicController {
     apiResponse.setData(music);
     return apiResponse;
   }
-
-   @GetMapping("/random/{userId}")
-    public List<Music> getRandomMusicByFollowedArtists(@PathVariable Integer userId) {
-        return musicService.getRandomMusicByFollowedArtists(userId);
+  @GetMapping("/random/{userId}")
+  ApiResponse<List<Music>> getRandomMusicByFollowedArtists(@PathVariable Integer userId) {
+      List<Music> randomMusic = musicService.getRandomMusicByFollowedArtists(userId);
+      return new ApiResponse<>(200, "Get random music successfully", "success", randomMusic);
   }
 
   @GetMapping("/top-liked")
-  public List<Music> getTopLikedMusic() {
-      return musicService.getTopLikedMusic();
+  ApiResponse<List<Music>> getTopLikedMusic() {
+      List<Music> topLikedMusic = musicService.getTopLikedMusic();
+      return new ApiResponse<>(200, "Get top liked music successfully", "success", topLikedMusic);
   }
 }
 

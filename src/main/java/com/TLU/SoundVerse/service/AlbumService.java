@@ -2,6 +2,7 @@ package com.TLU.SoundVerse.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Album;
+import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.AlbumRepository;
 
@@ -62,8 +64,4 @@ public class AlbumService {
         .build();
   }
 
-  public List<AlbumResponse> getRandomAlbums() {
-    List<Album> albums = albumRepository.findRandomAlbums();
-    return albums.stream().map(this::toAlbumResponse).toList();
-}
 }

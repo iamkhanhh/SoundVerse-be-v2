@@ -12,8 +12,6 @@ import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
-import com.TLU.SoundVerse.repository.FollowerRepository;
-import com.TLU.SoundVerse.repository.LikeRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 
 import lombok.AccessLevel;
@@ -25,8 +23,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MusicService {
   MusicRepository musicRepository;
-  FollowerRepository followerRepository;
-  LikeRepository likeRepository;
   S3Service s3Service;
   GenreService genreService;
   UserService userService;
@@ -63,6 +59,12 @@ public class MusicService {
     return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
+  public List<MusicResponse> getMusicsByPlaylsitId(Integer playlistId) {
+    List<Music> musicList = musicRepository.findByPlaylistId(playlistId);
+    
+    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+  }
+
   public MusicResponse toMusicResponse(Music music) {
     Map<String, String> user = userService.getUserById(music.getArtistId());
     return MusicResponse.builder()
@@ -80,43 +82,12 @@ public class MusicService {
         .build();
   }
 
-  public List<Music> getRandomMusicByFollowedArtists(Integer userId) {
-  
-    List<Integer> followedArtistIds = followerRepository.findByUserId(userId)
-            .stream()
-            .map(f -> f.getArtistId())
-            .collect(Collectors.toList());
+  public List<MusicResponse> getAllMusic() {
+    List<Music> musicList = musicRepository.findAll();
 
-   
-    List<Music> musicList = musicRepository.findAll()
-            .stream()
-            .filter(m -> followedArtistIds.contains(m.getArtistId()))
-            .collect(Collectors.toList());
-
-    if (musicList.size() < 6) {
-        List<Music> allMusic = musicRepository.findAll();
-        Collections.shuffle(allMusic);
-        for (Music music : allMusic) {
-            if (!musicList.contains(music)) {
-                musicList.add(music);
-            }
-            if (musicList.size() >= 6) {
-                break;
-            }
-        }
-    }
-
-    Collections.shuffle(musicList);
-    return musicList.stream().limit(6).collect(Collectors.toList());
+    return musicList.stream()
+                    .map(this::toMusicResponse)
+                    .collect(Collectors.toList());
 }
 
-public List<Music> getTopLikedMusic() {
-  List<Object[]> topLikedMusic = likeRepository.findTopLikedMusic();
-  List<Integer> topMusicIds = topLikedMusic.stream()
-          .map(obj -> (Integer) obj[0])
-          .limit(6)
-          .collect(Collectors.toList());
-
-  return musicRepository.findAllById(topMusicIds);
-}
 }

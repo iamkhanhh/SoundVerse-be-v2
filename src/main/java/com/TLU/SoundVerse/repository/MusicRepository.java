@@ -13,6 +13,7 @@ public interface MusicRepository extends JpaRepository<Music, Integer> {
     List<Music> findByTitleContainingIgnoreCase(String keyword);
     List<Music> findByArtistId(Integer artistId);
     List<Music> findByAlbumsId(Integer albumsId);
+    List<Music> findByPlaylistId(Integer playlistId);
 
     @Query("SELECT COUNT(m) FROM Music m")
     Integer countMusic();

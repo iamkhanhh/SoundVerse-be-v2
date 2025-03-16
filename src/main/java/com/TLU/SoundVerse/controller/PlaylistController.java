@@ -2,10 +2,13 @@ package com.TLU.SoundVerse.controller;
 
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
+import com.TLU.SoundVerse.dto.response.PlaylistResponse;
 import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,10 +42,17 @@ public class PlaylistController {
     }
 
     @GetMapping("/{playlistId}/songs")
-    public ResponseEntity<ApiResponse<List<CreateMusicDto>>> getMusicsInPlaylist(
-            @PathVariable Integer playlistId) {
-        ApiResponse<List<CreateMusicDto>> response = playlistService.getMusicsInPlaylist(playlistId);
-        return ResponseEntity.status(response.getCode()).body(response);
+    public ResponseEntity<ApiResponse<PlaylistResponse>> getMusicsInPlaylist(@PathVariable Integer playlistId) {
+        PlaylistResponse playlistResponse = playlistService.getMusicsInPlaylist(playlistId);
+
+        ApiResponse<PlaylistResponse> response = ApiResponse.<PlaylistResponse>builder()
+            .code(200)
+            .message("Successfully fetched playlist songs")
+            .status("success")
+            .data(playlistResponse)
+            .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping("/{playlistId}/songs/{musicId}")

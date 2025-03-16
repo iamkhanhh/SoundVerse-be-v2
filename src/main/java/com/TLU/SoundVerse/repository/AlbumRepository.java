@@ -11,7 +11,7 @@ import com.TLU.SoundVerse.entity.Album;
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Long> {
     List<Album> findByTitleContainingIgnoreCase(String keyword);
-    @Query(value = "SELECT * FROM album ORDER BY RAND() LIMIT 6", nativeQuery = true)
+    @Query(value = "SELECT * FROM album ORDER BY RAND() LIMIT 4", nativeQuery = true)
     List<Album> findRandomAlbums();   
 
     @Query("SELECT COUNT(a) FROM Album a")

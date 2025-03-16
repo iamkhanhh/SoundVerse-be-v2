@@ -22,6 +22,7 @@ public class CommonService {
     private final AlbumService albumService;
     private final MusicService musicService;
     private final UserService userService;
+    private final S3Service s3Service;
 
     public List<AlbumResponse> getRandomAlbums() {
         List<Album> albums = albumRepository.findRandomAlbums();
@@ -96,7 +97,7 @@ public class CommonService {
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .country(user.getCountry())
-                .profilePicImage(user.getProfilePicImage())
+                .profilePicImage(s3Service.getS3Url(user.getProfilePicImage()))
                 .fullName(user.getFullName())
                 .dob(user.getDob())
                 .songs(musics)

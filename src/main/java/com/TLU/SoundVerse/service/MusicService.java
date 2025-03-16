@@ -86,7 +86,7 @@ public class MusicService {
         .artist(user.get("username"))
         .artistId(Integer.parseInt(user.get("id")))
         .length(music.getLength())
-        .filePath(music.getFilePath())
+        .filePath(s3Service.getS3Url(music.getFilePath()))
         .createdAt(music.getCreatedAt())
         .build();
   }

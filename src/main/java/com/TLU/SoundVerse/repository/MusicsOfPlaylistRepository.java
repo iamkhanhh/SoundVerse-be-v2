@@ -10,4 +10,5 @@ import java.util.List;
 public interface MusicsOfPlaylistRepository extends JpaRepository<MusicsOfPlaylist, Integer> {
     List<MusicsOfPlaylist> findByAlbumsId(Integer albumsId);
     void deleteByAlbumsIdAndMusicId(Integer albumsId, Integer musicId);
+    List<MusicsOfPlaylist> findByMusicId(Integer albumsId);
 }

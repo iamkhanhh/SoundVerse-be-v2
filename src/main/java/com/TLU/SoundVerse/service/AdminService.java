@@ -1,5 +1,7 @@
 package com.TLU.SoundVerse.service;
 
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +11,14 @@ import com.TLU.SoundVerse.repository.AlbumRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.AccessLevel;
+
+@SuppressWarnings("unused")
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminService {
     UserRepository userRepository;
     MusicRepository musicRepository;

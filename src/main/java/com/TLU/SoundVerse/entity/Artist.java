@@ -13,6 +13,7 @@ import lombok.Data;
  
 @Entity
 @Data
+
 public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

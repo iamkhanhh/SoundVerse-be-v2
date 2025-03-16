@@ -5,6 +5,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AlbumResponse {
   Integer id;
 
@@ -13,6 +21,10 @@ public class AlbumResponse {
   String description;
 
   String thumbnail;
+
+  String artist;
+
+  Integer artistId;
 
   Integer listOfMusic;
 

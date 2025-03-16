@@ -25,7 +25,9 @@ public class MusicResponse {
 
   String genre;
 
-  UserResponse artist;
+  String artist;
+
+  Integer artistId;
 
   Float length;
 

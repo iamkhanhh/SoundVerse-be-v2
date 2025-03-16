@@ -43,12 +43,14 @@ public class AlbumController {
 
   @GetMapping
   ApiResponse<List<AlbumResponse>> getAlbums() {
-    List<AlbumResponse> albunm = albumService.getAlbums();
+    List<AlbumResponse> albums = albumService.getAlbums();
 
     ApiResponse<List<AlbumResponse>> apiResponse = new ApiResponse<List<AlbumResponse>>();
     apiResponse.setStatus("success");
-    apiResponse.setMessage("Create new album successfilly");
-    apiResponse.setData(albunm);
+    apiResponse.setMessage("Get album successfilly");
+    apiResponse.setData(albums);
     return apiResponse;
   }
+
+
 }

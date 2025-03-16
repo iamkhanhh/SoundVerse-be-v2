@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.TLU.SoundVerse.enums.UserRole;
 import com.TLU.SoundVerse.repository.AlbumRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
@@ -29,7 +30,7 @@ public class CommonService {
         Map<String, Integer> stats = new HashMap<>();
         stats.put("totalUsers", userRepository.countUsers());
         stats.put("newUsersThisMonth", userRepository.countNewUsersThisMonth(startOfMonth));
-        stats.put("totalArtists", userRepository.countArtists());
+        stats.put("totalArtists", userRepository.countArtists(UserRole.ARTIST));
         stats.put("totalMusic", musicRepository.countMusic());
         stats.put("newMusicThisMonth", musicRepository.countNewMusicThisMonth(startOfMonth));
         stats.put("totalAlbums", albumRepository.countAlbums());

@@ -1,13 +1,16 @@
 package com.TLU.SoundVerse.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.TLU.SoundVerse.entity.User;
+import com.TLU.SoundVerse.enums.UserRole;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -24,11 +27,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT COUNT(u) FROM User u")
     Integer countUsers();
 
-    // Đếm số user mới trong tháng
+  
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :startOfMonth")
     Integer countNewUsersThisMonth(LocalDateTime startOfMonth);
 
-    // Đếm tổng số artist (giả sử role artist là 'ARTIST')
-    @Query("SELECT COUNT(u) FROM User u WHERE u.role = 'ARTIST'")
-    Integer countArtists();
+ 
+    @Query("SELECT COUNT(u) FROM User u WHERE u.role = :role")
+    Integer countArtists(@Param("role") UserRole role);    
 }

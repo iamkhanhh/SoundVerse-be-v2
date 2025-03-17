@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/playlist")
+@RequestMapping("playlist")
 @RequiredArgsConstructor
 public class PlaylistController {
 
@@ -27,7 +27,7 @@ public class PlaylistController {
 
         ApiResponse<List<PlaylistResponse>> apiResponse = new ApiResponse<List<PlaylistResponse>>();
         apiResponse.setStatus("success");
-        apiResponse.setMessage("Create Playlist successfilly");
+        apiResponse.setMessage("Get Playlists successfilly");
         apiResponse.setData(response);
         return apiResponse;
     }

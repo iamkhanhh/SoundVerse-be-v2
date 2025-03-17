@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+import com.TLU.SoundVerse.enums.UserRole;
+import com.TLU.SoundVerse.enums.UserStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -27,8 +31,13 @@ public class UserResponse {
   String profilePicImage;
 
   String fullName;
+
+  UserRole role;
+
+  UserStatus status;
   
-  String dob;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+  LocalDate dob;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
   LocalDateTime createdAt;

@@ -42,8 +42,11 @@ public class AlbumController {
   }
 
   @GetMapping
-  ApiResponse<List<AlbumResponse>> getAlbums() {
-    List<AlbumResponse> albums = albumService.getAlbums();
+  ApiResponse<List<AlbumResponse>> getMusic(HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
+    List<AlbumResponse> albums = albumService.getMusic(id);
 
     ApiResponse<List<AlbumResponse>> apiResponse = new ApiResponse<List<AlbumResponse>>();
     apiResponse.setStatus("success");

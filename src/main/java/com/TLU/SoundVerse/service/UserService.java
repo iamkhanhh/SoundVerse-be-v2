@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.ArtistResponse;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.enums.UserStatus;
@@ -45,8 +47,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                    .map(this::toUserResponse)
+                    .collect(Collectors.toList());
     }
 
     // public User updateUser(String userId, UpdateUserDto updateUserDto) {
@@ -93,4 +98,20 @@ public class UserService {
 
         return artist.getId();
     }
+
+    public UserResponse toUserResponse(User user) {
+        return UserResponse.builder()
+            .id(user.getId())
+            .username(user.getUsername())
+            .email(user.getEmail())
+            .gender(user.getGender())
+            .country(user.getCountry())
+            .status(user.getStatus())
+            .role(user.getRole())
+            .profilePicImage(user.getProfilePicImage())
+            .fullName(user.getFullName())
+            .dob(user.getDob())
+            .createdAt(user.getCreatedAt())
+            .build();
+  } 
 }

@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.service.AdminService;
 import com.TLU.SoundVerse.service.AlbumService;
 import com.TLU.SoundVerse.service.MusicService;
+import com.TLU.SoundVerse.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class AdminController {
     AdminService adminService;
     MusicService musicService;
     AlbumService albumService;
+    UserService userService;
 
     @GetMapping("check")
     public ApiResponse<Boolean> checkAdmin(HttpServletRequest request) {
@@ -58,9 +61,17 @@ public class AdminController {
    
     @GetMapping("/albums")
     public ApiResponse<List<AlbumResponse>> getAllAlbums() {
-        List<AlbumResponse> albumList = albumService. getAlbums();
+        List<AlbumResponse> albumList = albumService.getAlbums();
         return new ApiResponse<>(200, "Get all albums successfully", "success", albumList);
     }
 
-    
+    @GetMapping("/users")
+    ApiResponse<List<UserResponse>> getUsers() {
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<List<UserResponse>>();
+
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("List users successfilly");
+        apiResponse.setData(userService.getUsers());
+    return apiResponse;
+  }
 }

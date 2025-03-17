@@ -65,7 +65,7 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusicsByPlaylsitId(Integer playlistId) {
-    List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByMusicId(playlistId);
+    List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
 
     List<Music> musics =  musicList.stream()
                                   .map(mop -> musicRepository.findById(mop.getMusicId()).orElse(null))

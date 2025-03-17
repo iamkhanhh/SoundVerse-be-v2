@@ -31,8 +31,6 @@ public class UserService {
     UserRepository userRepository;
     ArtistRepository artistRepository;
     UserMapper userMapper;
-    AlbumService albumService;
-    MusicService musicService;
 
     public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -94,28 +92,5 @@ public class UserService {
         Artist artist = artistRepository.findByUserId(userId);
 
         return artist.getId();
-    }
-
-    public ArtistResponse toArtistResponse(Artist artist) {
-
-        User user = getUserById(artist.getUserId());
-
-        List<MusicResponse> musics = musicService.getMusic(user.getId());
-
-        List<AlbumResponse> albums  = albumService.getMusic(user.getId());
-
-        return ArtistResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .gender(user.getGender())
-                .country(user.getCountry())
-                .profilePicImage(user.getProfilePicImage())
-                .fullName(user.getFullName())
-                .dob(user.getDob())
-                .songs(musics)
-                .albums(albums)
-                .createdAt(artist.getCreatedAt())
-                .build();
     }
 }

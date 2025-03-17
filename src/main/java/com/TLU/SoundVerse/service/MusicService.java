@@ -11,6 +11,8 @@ import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.MusicRepository;
+import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
+import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class MusicService {
   S3Service s3Service;
   GenreService genreService;
   UserService userService;
+  MusicsOfPlaylistRepository musicsOfPlaylistRepository;
   
 
   public Music createMusic(CreateMusicDto createMusicDto, Integer user_id) {
@@ -62,9 +65,13 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusicsByPlaylsitId(Integer playlistId) {
-    List<Music> musicList = musicRepository.findByPlaylistId(playlistId);
+    List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByMusicId(playlistId);
+
+    List<Music> musics =  musicList.stream()
+                                  .map(mop -> musicRepository.findById(mop.getMusicId()).orElse(null))
+                                  .collect(Collectors.toList());
     
-    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+    return musics.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
   public MusicResponse toMusicResponse(Music music) {
@@ -79,7 +86,7 @@ public class MusicService {
         .artist(user.get("username"))
         .artistId(Integer.parseInt(user.get("id")))
         .length(music.getLength())
-        .filePath(music.getFilePath())
+        .filePath(s3Service.getS3Url(music.getFilePath()))
         .createdAt(music.getCreatedAt())
         .build();
   }

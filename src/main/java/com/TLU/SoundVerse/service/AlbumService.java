@@ -27,6 +27,7 @@ public class AlbumService {
   AlbumRepository albumRepository;
   MusicService musicService;
   UserService userService;
+  S3Service s3Service;
 
   public Album create(CreateAlbumDto createAlbumDto, Integer userId) {
     Integer artistId = userService.getArtistIdByUserId(userId);
@@ -67,7 +68,7 @@ public class AlbumService {
         .id(album.getId())
         .title(album.getTitle())
         .description(album.getDescription())
-        .thumbnail(album.getThumbnail())
+        .thumbnail(s3Service.getS3Url(album.getThumbnail()))
         .artist(user.get("username"))
         .artistId(Integer.parseInt(user.get("id")))
         .listOfMusic(album.getListOfMusic())

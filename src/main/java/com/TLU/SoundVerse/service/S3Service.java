@@ -84,6 +84,8 @@ public class S3Service {
   }
 
   public String getS3Url(String fileName) {
+    System.out.println("Checking S3 key: " + fileName);
+    System.out.println("Bucket Name: " + bucketName);
     try (S3Presigner presigner = getPresigner()) {
       GetObjectRequest objectRequest = GetObjectRequest.builder()
           .bucket(bucketName)

@@ -2,6 +2,7 @@ package com.TLU.SoundVerse.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ public interface MusicRepository extends JpaRepository<Music, Integer> {
     List<Music> findByTitleContainingIgnoreCase(String keyword);
     List<Music> findByArtistId(Integer artistId);
     List<Music> findByAlbumsId(Integer albumsId);
-    List<Music> findByPlaylistId(Integer playlistId);
+    Optional<Music> findById(Integer id);
 
     @Query("SELECT COUNT(m) FROM Music m")
     Integer countMusic();

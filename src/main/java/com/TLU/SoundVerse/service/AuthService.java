@@ -32,6 +32,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.AccessLevel;
 import com.TLU.SoundVerse.service.EmailService;
+import com.TLU.SoundVerse.service.ArtistService;
 
 @SuppressWarnings("unused")
 @Service
@@ -40,6 +41,7 @@ import com.TLU.SoundVerse.service.EmailService;
 public class AuthService {
     UserRepository userRepository;
     EmailService emailService;
+    ArtistService artistService;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -102,6 +104,7 @@ public class AuthService {
 
         sendVerificationEmail(user);
         userRepository.save(user);
+        artistService.createArtist(user.getId());
         return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 

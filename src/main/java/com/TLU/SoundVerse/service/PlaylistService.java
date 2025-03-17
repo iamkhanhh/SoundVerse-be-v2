@@ -15,9 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
@@ -36,12 +40,14 @@ public class PlaylistService {
     public PlaylistResponse createPlaylist(HttpServletRequest request, PlaylistDto dto) {
         Integer userId = getUserIdFromRequest(request);
 
-        Playlist newPlaylist = Playlist.builder()
-            .title(dto.getTitle())
-            .description(dto.getDescription())
-            .thumbnail(userId + "/thumbnails/" + dto.getThumbnail())
-            .userId(userId)
-            .build();
+        Playlist newPlaylist = new Playlist();
+
+        newPlaylist.setTitle(dto.getTitle());
+        newPlaylist.setDescription(dto.getDescription());
+        newPlaylist.setThumbnail(userId + "/thumbnails/" + dto.getThumbnail());
+        newPlaylist.setListOfMusic(0);
+        newPlaylist.setIsDeleted(0);
+        newPlaylist.setUserId(userId);
 
         return toPlaylistResponse(playlistRepository.save(newPlaylist));
 
@@ -79,16 +85,17 @@ public class PlaylistService {
     }
 
     public List<MusicResponse> getMusicsInPlaylist(Integer playlistId) {
-        List<MusicResponse> songs = musicService.getMusicsByPlaylsitId(playlistId);
+        List<MusicResponse> songs = musicService.getMusicsByPlaylistId(playlistId);
         return songs;
     }
 
     public PlaylistResponse toPlaylistResponse(Playlist playlist) {
-        List<MusicResponse> songs = musicService.getMusicsByPlaylsitId(playlist.getId());
+        List<MusicResponse> songs = musicService.getMusicsByPlaylistId(playlist.getId());
 
         return PlaylistResponse.builder()
             .id(playlist.getId())
             .title(playlist.getTitle())
+            .description(playlist.getDescription())
             .thumbnail(s3Service.getS3Url(playlist.getThumbnail()))
             .songs(songs)
             .createdAt(playlist.getCreatedAt())

@@ -3,6 +3,7 @@ package com.TLU.SoundVerse.controller;
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.PlaylistResponse;
+import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +22,26 @@ public class PlaylistController {
     private final PlaylistService playlistService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PlaylistDto>>> getUserPlaylists(HttpServletRequest request) {
-        ApiResponse<List<PlaylistDto>> response = playlistService.getUserPlaylists(request);
-        return ResponseEntity.status(response.getCode()).body(response);
+    public ApiResponse<List<PlaylistResponse>> getUserPlaylists(HttpServletRequest request) {
+        List<PlaylistResponse> response = playlistService.getUserPlaylists(request);
+
+        ApiResponse<List<PlaylistResponse>> apiResponse = new ApiResponse<List<PlaylistResponse>>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Create Playlist successfilly");
+        apiResponse.setData(response);
+        return apiResponse;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PlaylistDto>> createPlaylist(
+    public ApiResponse<PlaylistResponse> createPlaylist(
             HttpServletRequest request, @RequestBody PlaylistDto dto) {
-        ApiResponse<PlaylistDto> response = playlistService.createPlaylist(request, dto);
-        return ResponseEntity.status(response.getCode()).body(response);
+        PlaylistResponse response = playlistService.createPlaylist(request, dto);
+
+        ApiResponse<PlaylistResponse> apiResponse = new ApiResponse<PlaylistResponse>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Create Playlist successfilly");
+        apiResponse.setData(response);
+        return apiResponse;
     }
 
     @DeleteMapping("/{playlistId}")
@@ -41,10 +52,10 @@ public class PlaylistController {
     }
 
     @GetMapping("/{playlistId}/songs")
-    public ResponseEntity<ApiResponse<PlaylistResponse>> getMusicsInPlaylist(@PathVariable Integer playlistId) {
-        PlaylistResponse playlistResponse = playlistService.getMusicsInPlaylist(playlistId);
+    public ResponseEntity<ApiResponse<List<MusicResponse> >> getMusicsInPlaylist(@PathVariable Integer playlistId) {
+        List<MusicResponse>  playlistResponse = playlistService.getMusicsInPlaylist(playlistId);
 
-        ApiResponse<PlaylistResponse> response = ApiResponse.<PlaylistResponse>builder()
+        ApiResponse<List<MusicResponse>> response = ApiResponse.<List<MusicResponse>>builder()
             .code(200)
             .message("Successfully fetched playlist songs")
             .status("success")

@@ -29,7 +29,7 @@ public class MusicService {
   MusicsOfPlaylistRepository musicsOfPlaylistRepository;
   
 
-  public Music createMusic(CreateMusicDto createMusicDto, Integer user_id) {
+  public MusicResponse createMusic(CreateMusicDto createMusicDto, Integer user_id) {
     Integer artistId = userService.getArtistIdByUserId(user_id);
     Music newMusic = new Music();
 
@@ -43,8 +43,7 @@ public class MusicService {
     newMusic.setLength(createMusicDto.getLength());
     newMusic.setFilePath(user_id + "/" + createMusicDto.getFilePath());
 
-    musicRepository.save(newMusic);
-    return newMusic;
+    return toMusicResponse(musicRepository.save(newMusic));
   }
 
   public List<MusicResponse> getMusic(Integer userId) {
@@ -65,7 +64,7 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusicsByPlaylsitId(Integer playlistId) {
-    List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByMusicId(playlistId);
+    List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
 
     List<Music> musics =  musicList.stream()
                                   .map(mop -> musicRepository.findById(mop.getMusicId()).orElse(null))

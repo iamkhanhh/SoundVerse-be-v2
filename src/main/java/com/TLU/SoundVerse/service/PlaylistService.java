@@ -26,58 +26,25 @@ public class PlaylistService {
     UserService userService;
     S3Service s3Service;
 
-    public ApiResponse<List<PlaylistDto>> getUserPlaylists(HttpServletRequest request) {
+    public  List<PlaylistResponse> getUserPlaylists(HttpServletRequest request) {
         Integer userId = getUserIdFromRequest(request);
-
-        if (userId == null) {
-            return ApiResponse.<List<PlaylistDto>>builder()
-                .code(400)
-                .message("User ID not found")
-                .status("failed")
-                .data(null)
-                .build();
-        }
 
         List<Playlist> playlists = playlistRepository.findByUserIdAndIsDeleted(userId, 0);
-        List<PlaylistDto> playlistDtos = playlists.stream()
-            .map(this::convertToDto)
-            .collect(Collectors.toList());
-
-        return ApiResponse.<List<PlaylistDto>>builder()
-            .code(200)
-            .message("Successfully fetched playlists")
-            .status("success")
-            .data(playlistDtos)
-            .build();
+        return playlists.stream().map(this::toPlaylistResponse).collect(Collectors.toList());
     }
 
-    public ApiResponse<PlaylistDto> createPlaylist(HttpServletRequest request, PlaylistDto dto) {
+    public PlaylistResponse createPlaylist(HttpServletRequest request, PlaylistDto dto) {
         Integer userId = getUserIdFromRequest(request);
-
-        if (userId == null) {
-            return ApiResponse.<PlaylistDto>builder()
-                .code(400)
-                .message("User ID not found")
-                .status("failed")
-                .build();
-        }
 
         Playlist newPlaylist = Playlist.builder()
             .title(dto.getTitle())
             .description(dto.getDescription())
-            .thumbnail(dto.getThumbnail())
+            .thumbnail(userId + "/thumbnails/" + dto.getThumbnail())
             .userId(userId)
             .build();
 
-        playlistRepository.save(newPlaylist);
-        PlaylistDto responseDto = convertToDto(newPlaylist);
+        return toPlaylistResponse(playlistRepository.save(newPlaylist));
 
-        return ApiResponse.<PlaylistDto>builder()
-            .code(201)
-            .message("Playlist created successfully")
-            .status("success")
-            .data(responseDto)
-            .build();
     }
 
     public ApiResponse<String> deletePlaylist(HttpServletRequest request, Integer playlistId) {
@@ -111,11 +78,9 @@ public class PlaylistService {
             .build();
     }
 
-    public PlaylistResponse getMusicsInPlaylist(Integer playlistId) {
-        Playlist playlist = playlistRepository.findById(playlistId)
-            .orElseThrow(() -> new RuntimeException("Playlist not found"));
-
-        return toPlaylistResponse(playlist);
+    public List<MusicResponse> getMusicsInPlaylist(Integer playlistId) {
+        List<MusicResponse> songs = musicService.getMusicsByPlaylsitId(playlistId);
+        return songs;
     }
 
     public PlaylistResponse toPlaylistResponse(Playlist playlist) {

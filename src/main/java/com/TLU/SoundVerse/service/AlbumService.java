@@ -29,18 +29,23 @@ public class AlbumService {
   UserService userService;
   S3Service s3Service;
 
-  public Album create(CreateAlbumDto createAlbumDto, Integer userId) {
+  public AlbumResponse create(CreateAlbumDto createAlbumDto, Integer userId) {
     Integer artistId = userService.getArtistIdByUserId(userId);
     Album newAlbum = new Album();
 
     newAlbum.setArtistId(artistId);
     newAlbum.setTitle(createAlbumDto.getTitle());
-    newAlbum.setThumbnail(createAlbumDto.getThumbnail());
+    newAlbum.setThumbnail(userId + "/thumbnails/" + createAlbumDto.getThumbnail());
     newAlbum.setDescription(createAlbumDto.getDescription());
     newAlbum.setListOfMusic(0);
     newAlbum.setStatus(MusicStatus.PENDING);
 
-    return albumRepository.save(newAlbum);
+    return toAlbumResponse(albumRepository.save(newAlbum));
+  }
+
+  public AlbumResponse getAlbumById(Integer id) {
+    Album album = albumRepository.findById(id);
+    return toAlbumResponse(album);
   }
 
   public List<AlbumResponse> getAlbums() {

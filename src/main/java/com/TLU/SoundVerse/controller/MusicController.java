@@ -28,13 +28,13 @@ public class MusicController {
   MusicService musicService;
 
   @PostMapping
-  ApiResponse<Music> createMusic(HttpServletRequest request, @RequestBody CreateMusicDto createMusicDto) {
+  ApiResponse<MusicResponse> createMusic(HttpServletRequest request, @RequestBody CreateMusicDto createMusicDto) {
     @SuppressWarnings("unchecked")
     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
     Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    Music music = musicService.createMusic(createMusicDto, id);
+    MusicResponse music = musicService.createMusic(createMusicDto, id);
 
-    ApiResponse<Music> apiResponse = new ApiResponse<Music>();
+    ApiResponse<MusicResponse> apiResponse = new ApiResponse<MusicResponse>();
     apiResponse.setStatus("success");
     apiResponse.setMessage("Upload Music successfilly");
     apiResponse.setData(music);

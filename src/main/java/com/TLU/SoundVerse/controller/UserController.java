@@ -37,16 +37,6 @@ public class UserController {
     return apiResponse;
   }
 
-  @GetMapping
-  ApiResponse<List<User>> getUsers() {
-    ApiResponse<List<User>> apiResponse = new ApiResponse<List<User>>();
-
-    apiResponse.setStatus("success");
-    apiResponse.setMessage("List users successfilly");
-    apiResponse.setData(userService.getUsers());
-    return apiResponse;
-  }
-
   // @GetMapping("/{userId}")
   // ApiResponse<User> getUsernameAndIdById(@PathVariable String userId) {
   //   ApiResponse<User> apiResponse = new ApiResponse<User>();

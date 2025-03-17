@@ -11,6 +11,8 @@ public class PlaylistResponse {
     Integer id;
 
     String title;
+
+    String description;
     
     List<MusicResponse> songs;
     

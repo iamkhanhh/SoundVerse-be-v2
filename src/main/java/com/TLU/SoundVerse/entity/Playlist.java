@@ -32,8 +32,6 @@ public class Playlist {
  
     private Integer listOfMusic;
  
-    private MusicStatus status;
- 
     private Integer isDeleted;
 
     @CreationTimestamp

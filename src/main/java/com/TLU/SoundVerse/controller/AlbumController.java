@@ -14,6 +14,7 @@ import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.entity.Album;
 import com.TLU.SoundVerse.service.AlbumService;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -28,16 +29,27 @@ public class AlbumController {
   AlbumService albumService;
 
   @PostMapping
-  ApiResponse<Album> create(@RequestBody CreateAlbumDto createAlbumDto, HttpServletRequest request) {
+  ApiResponse<AlbumResponse> create(@RequestBody CreateAlbumDto createAlbumDto, HttpServletRequest request) {
     @SuppressWarnings("unchecked")
     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
     Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    Album albunm = albumService.create(createAlbumDto, id);
+    AlbumResponse albunm = albumService.create(createAlbumDto, id);
 
-    ApiResponse<Album> apiResponse = new ApiResponse<Album>();
+    ApiResponse<AlbumResponse> apiResponse = new ApiResponse<AlbumResponse>();
     apiResponse.setStatus("success");
     apiResponse.setMessage("Create new album successfilly");
     apiResponse.setData(albunm);
+    return apiResponse;
+  }
+
+  @GetMapping("/{albumId}")
+  ApiResponse<AlbumResponse> getAlbumById(@PathVariable Integer albumId) {
+    AlbumResponse albums = albumService.getAlbumById(albumId);
+
+    ApiResponse<AlbumResponse> apiResponse = new ApiResponse<AlbumResponse>();
+    apiResponse.setStatus("success");
+    apiResponse.setMessage("Get album successfilly");
+    apiResponse.setData(albums);
     return apiResponse;
   }
 
@@ -54,6 +66,4 @@ public class AlbumController {
     apiResponse.setData(albums);
     return apiResponse;
   }
-
-
 }

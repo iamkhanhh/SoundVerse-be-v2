@@ -12,6 +12,5 @@ public class PlaylistDto {
     String title;
     String description;
     String thumbnail;
-
 }
     

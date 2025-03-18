@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
-import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.service.MusicService;
 
 import jakarta.servlet.http.HttpServletRequest;

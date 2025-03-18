@@ -52,7 +52,7 @@ public class PlaylistController {
     }
 
     @GetMapping("/{playlistId}/songs")
-    public ResponseEntity<ApiResponse<List<MusicResponse> >> getMusicsInPlaylist(@PathVariable Integer playlistId) {
+    public ResponseEntity<ApiResponse<List<MusicResponse>>> getMusicsInPlaylist(@PathVariable Integer playlistId) {
         List<MusicResponse>  playlistResponse = playlistService.getMusicsInPlaylist(playlistId);
 
         ApiResponse<List<MusicResponse>> response = ApiResponse.<List<MusicResponse>>builder()

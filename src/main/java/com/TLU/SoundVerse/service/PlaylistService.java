@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Service
@@ -27,7 +26,6 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
     MusicService musicService;
-    UserService userService;
     S3Service s3Service;
 
     public  List<PlaylistResponse> getUserPlaylists(HttpServletRequest request) {
@@ -124,14 +122,6 @@ public class PlaylistService {
             .code(201)
             .message("Successfully added song to playlist")
             .status("success")
-            .build();
-    }
-
-    private PlaylistDto convertToDto(Playlist playlist) {
-        return PlaylistDto.builder()
-            .title(playlist.getTitle())
-            .description(playlist.getDescription())
-            .thumbnail(playlist.getThumbnail())
             .build();
     }
 

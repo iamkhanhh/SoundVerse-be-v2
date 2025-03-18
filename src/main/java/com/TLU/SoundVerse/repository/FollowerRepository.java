@@ -12,4 +12,8 @@ public interface FollowerRepository extends JpaRepository<Follower, Integer> {
     
     @Query("SELECT f.artistId, COUNT(f.id) AS followerCount FROM Follower f GROUP BY f.artistId ORDER BY followerCount DESC")
     List<Object[]> findTopFollowedArtists();
+
+    boolean existsByUserIdAndArtistId(Integer userId, Integer artistId);
+    
+    void deleteByUserIdAndArtistId(Integer userId, Integer artistId);
 }

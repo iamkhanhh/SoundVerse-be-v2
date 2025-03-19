@@ -1,11 +1,6 @@
 package com.TLU.SoundVerse.dto.response;
 
 import java.util.List;
-
-import com.TLU.SoundVerse.dto.response.ArtistResponse;
-import com.TLU.SoundVerse.dto.response.MusicResponse;
-import com.TLU.SoundVerse.dto.response.AlbumResponse;
-
 import lombok.Data;
 
 @Data

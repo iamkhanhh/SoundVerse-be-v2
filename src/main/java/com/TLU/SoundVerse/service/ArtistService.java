@@ -1,6 +1,7 @@
 package com.TLU.SoundVerse.service;
 
 import org.springframework.stereotype.Service;
+
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.repository.ArtistRepository;
 

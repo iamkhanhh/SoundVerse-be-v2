@@ -14,7 +14,6 @@ import com.TLU.SoundVerse.repository.ArtistRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.AccessLevel;
@@ -30,7 +29,6 @@ public class SearchService {
     CommonService commonService;
     MusicService musicService;
     AlbumService albumService;
-    S3Service s3Service;
 
     public SearchResult search(String keyword) {
         List<Artist> artists = artistRepository.findArtistsByUserFullName(keyword);

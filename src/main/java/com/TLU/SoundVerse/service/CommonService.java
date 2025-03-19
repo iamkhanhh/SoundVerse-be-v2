@@ -32,10 +32,6 @@ public class CommonService {
     public List<ArtistResponse> getTopFollowedArtists() {
         List<Object[]> topArtists = followerRepository.findTopFollowedArtists();
 
-        if (topArtists == null || topArtists.isEmpty()) {
-            throw new RuntimeException("No artists found!");
-        }
-
         List<Integer> topArtistIds = topArtists.stream()
                 .map(obj -> (Integer) obj[0])
                 .limit(4)
@@ -96,6 +92,11 @@ public class CommonService {
         Collections.shuffle(musicList);
         List<Music> musics = musicList.stream().limit(6).collect(Collectors.toList());
         return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
+    }
+
+    public ArtistResponse getArtistById(Integer artistId) {
+        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return toArtistResponse(artist);
     }
 
     public ArtistResponse toArtistResponse(Artist artist) {

@@ -79,7 +79,7 @@ public class MusicService {
         .id(music.getId())
         .title(music.getTitle())
         .description(music.getDescription())
-        .thumbnail(s3Service.getS3Url(music.getThumbnail()))
+        .thumbnail(music.getThumbnail() != null ? s3Service.getS3Url(music.getThumbnail()) : "default_playlist_thumbnail.jpg")
         .albumsId(music.getAlbumsId())
         .genre(genreService.getGenreById(music.getGenreId()))
         .artist(user.get("username"))

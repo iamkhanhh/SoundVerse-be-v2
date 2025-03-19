@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.TLU.SoundVerse.dto.request.ForgotPasswordDto;
 import com.TLU.SoundVerse.dto.request.LoginDto;
 import com.TLU.SoundVerse.dto.request.VerifiDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
@@ -97,7 +98,7 @@ public class AuthController {
         ApiResponse<AuthResponse> apiResponse = new ApiResponse<AuthResponse>();
 
         apiResponse.setStatus("success");
-        apiResponse.setMessage("Login successfilly");
+        apiResponse.setMessage("Signup successfilly");
         return apiResponse;
     }
 
@@ -140,4 +141,25 @@ public class AuthController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
+    @PostMapping("/forgot_password")
+    public ResponseEntity<ApiResponse<?>> forgotPassword(@RequestBody ForgotPasswordDto input) {
+        try {
+            authService.forgotPassword(input);
+            ApiResponse<?> successResponse = ApiResponse.<Void>builder()
+                .code(200)
+                .status("success")
+                .message("Change Password Successfully")
+                .build();
+            return ResponseEntity.ok(successResponse);
+        } catch (RuntimeException e) {
+            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
+                .code(400)
+                .status("failed")
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
 }

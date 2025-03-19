@@ -94,7 +94,7 @@ public class PlaylistService {
             .id(playlist.getId())
             .title(playlist.getTitle())
             .description(playlist.getDescription())
-            .thumbnail(s3Service.getS3Url(playlist.getThumbnail()))
+            .thumbnail(playlist.getThumbnail() != null ? s3Service.getS3Url(playlist.getThumbnail()) :  "default_playlist_thumbnail.jpg")
             .songs(songs)
             .createdAt(playlist.getCreatedAt())
             .build();

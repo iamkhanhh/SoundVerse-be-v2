@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.TLU.SoundVerse.dto.request.ForgotPasswordDto;
 import com.TLU.SoundVerse.dto.request.LoginDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.request.VerifiDto;
@@ -166,7 +169,10 @@ public class AuthService {
         return String.valueOf(new Random().nextInt(900000) + 100000);
     }
 
-    // public String authenticate(LoginDto request) {
-    //     throw new UnsupportedOperationException("Unimplemented method 'authenticate'");
-    // }
+    public void forgotPassword(ForgotPasswordDto input) {
+        User user = userRepository.findByEmail(input.getEmail())
+        .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(input.getNewPassword())); 
+        userRepository.save(user);
+    }
 }

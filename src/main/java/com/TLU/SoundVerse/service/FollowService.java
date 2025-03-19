@@ -5,8 +5,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.TLU.SoundVerse.entity.Like;
-import com.TLU.SoundVerse.repository.LikeRepository;
+import com.TLU.SoundVerse.entity.Follower;
+import com.TLU.SoundVerse.repository.FollowerRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -16,34 +16,35 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class LikeService {
-    @Autowired 
-    LikeRepository likeRepository;
 
-    public boolean isUserLiked (HttpServletRequest request, Integer musicId) {
+public class FollowService {
+    @Autowired 
+    FollowerRepository followerRepository;
+
+    public boolean isUserFollowed (HttpServletRequest request, Integer artistId) {
         Integer userId = getUserIdFromRequest(request);
         if (userId == null) {
             throw new RuntimeException("User not found");
         }
 
-        if(likeRepository.existsByUserIdAndMusicId(userId, musicId)){
+        if(followerRepository.existsByUserIdAndArtistId(userId, artistId)){
             return true;
         }
-        Like like = new Like();
-        like.setUserId(userId);
-        like.setMusicId(musicId);
-        likeRepository.save(like);
+        Follower follower = new Follower();
+        follower.setUserId(userId);
+        follower.setArtistId(artistId);
+        followerRepository.save(follower);
         return false;
     }
 
-    public void unlikeMusic(HttpServletRequest request, Integer musicId){
+    public void unFollow(HttpServletRequest request, Integer artistId){
         Integer userId = getUserIdFromRequest(request);
         if (userId == null) {
             throw new RuntimeException("User not found");
         }
-        Like like = likeRepository.findByUserIdAndMusicId(userId, musicId).orElseThrow(() -> new RuntimeException("Like not found"));
+        Follower follower = followerRepository.findByUserIdAndArtistId(userId, artistId).orElseThrow(() -> new RuntimeException("Follow not found"));
 
-        likeRepository.delete(like);
+        followerRepository.delete(follower);
     }
 
     private Integer getUserIdFromRequest(HttpServletRequest request) {
@@ -63,5 +64,6 @@ public class LikeService {
             }
         }
         return null;
-    }
 }
+}
+

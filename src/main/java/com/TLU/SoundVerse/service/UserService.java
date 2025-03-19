@@ -30,6 +30,7 @@ public class UserService {
     UserRepository userRepository;
     ArtistRepository artistRepository;
     UserMapper userMapper;
+    ArtistService artistService;
 
     public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -73,7 +74,10 @@ public class UserService {
         }
     }
 
-    public Map<String, String> getUsernameAndIdById(Integer userId) {
+    public Map<String, String> getUsernameAndIdByArtistId(Integer artistId) {
+        System.out.println("artistId: " + artistId);
+        Integer userId = artistService.getArtistIdByUserId(artistId);
+        System.out.println("userId: " + userId);
         return userRepository.findById(userId)
                 .map(user -> {
                     Map<String, String> response = new HashMap<>();

@@ -3,7 +3,6 @@ package com.TLU.SoundVerse.controller;
 import com.TLU.SoundVerse.dto.request.PlaylistDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.PlaylistResponse;
-import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.service.PlaylistService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +50,11 @@ public class PlaylistController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
 
-    @GetMapping("/{playlistId}/songs")
-    public ResponseEntity<ApiResponse<List<MusicResponse>>> getMusicsInPlaylist(@PathVariable Integer playlistId) {
-        List<MusicResponse>  playlistResponse = playlistService.getMusicsInPlaylist(playlistId);
+    @GetMapping("/{playlistId}")
+    public ResponseEntity<ApiResponse<PlaylistResponse>> getPlaylistById(@PathVariable Integer playlistId) {
+        PlaylistResponse  playlistResponse = playlistService.getPlaylistById(playlistId);
 
-        ApiResponse<List<MusicResponse>> response = ApiResponse.<List<MusicResponse>>builder()
+        ApiResponse<PlaylistResponse> response = ApiResponse.<PlaylistResponse>builder()
             .code(200)
             .message("Successfully fetched playlist songs")
             .status("success")

@@ -74,7 +74,7 @@ public class MusicService {
   }
 
   public MusicResponse toMusicResponse(Music music) {
-    Map<String, String> user = userService.getUsernameAndIdById(music.getArtistId());
+    Map<String, String> user = userService.getUsernameAndIdByArtistId(music.getArtistId());
     return MusicResponse.builder()
         .id(music.getId())
         .title(music.getTitle())

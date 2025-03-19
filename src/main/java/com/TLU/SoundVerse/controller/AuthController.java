@@ -51,6 +51,23 @@ public class AuthController {
         return apiResponse;
     }
 
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("access_token", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        jwtCookie.setAttribute("SameSite", "Strict");
+
+        response.addCookie(jwtCookie);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Logout successfully");
+        return apiResponse;
+    }
+
     @PostMapping("/me")
     public ResponseEntity<?> getMyProfile(HttpServletRequest request) {
         @SuppressWarnings("unchecked")
@@ -59,15 +76,6 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String id = String.valueOf(user.get("id"));  
-        String email = (String) user.get("email");  
-        String username = (String) user.get("username");  
-        String role = (String) user.get("role");  
-    
-        System.out.println("ID: " + id);
-        System.out.println("Email: " + email);
-        System.out.println("Username: " + username);
-        System.out.println("Role: " + role);
 
         return ResponseEntity.ok(user);
     }

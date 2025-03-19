@@ -23,4 +23,9 @@ public class ArtistService {
 
         return artistRepository.save(artist);
     }
+
+    public Integer getArtistIdByUserId(Integer userId) {
+        Artist artist = artistRepository.findById(userId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return artist.getId();
+    }
 }

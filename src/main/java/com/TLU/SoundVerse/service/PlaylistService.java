@@ -82,9 +82,9 @@ public class PlaylistService {
             .build();
     }
 
-    public List<MusicResponse> getMusicsInPlaylist(Integer playlistId) {
-        List<MusicResponse> songs = musicService.getMusicsByPlaylistId(playlistId);
-        return songs;
+    public PlaylistResponse getPlaylistById(Integer playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new RuntimeException("Playlist not found!"));
+        return toPlaylistResponse(playlist);
     }
 
     public PlaylistResponse toPlaylistResponse(Playlist playlist) {

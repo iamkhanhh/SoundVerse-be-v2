@@ -67,13 +67,13 @@ public class AlbumService {
 
   public AlbumResponse toAlbumResponse(Album album) {
 
-    Map<String, String> user = userService.getUsernameAndIdById(album.getArtistId());
+    Map<String, String> user = userService.getUsernameAndIdByArtistId(album.getArtistId());
 
     return AlbumResponse.builder()
         .id(album.getId())
         .title(album.getTitle())
         .description(album.getDescription())
-        .thumbnail(s3Service.getS3Url(album.getThumbnail()))
+        .thumbnail(album.getThumbnail() != null ? s3Service.getS3Url(album.getThumbnail()) : "default_album_thumbnail.jpg")
         .artist(user.get("username"))
         .artistId(Integer.parseInt(user.get("id")))
         .listOfMusic(album.getListOfMusic())

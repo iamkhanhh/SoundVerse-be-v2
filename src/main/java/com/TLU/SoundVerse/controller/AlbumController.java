@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TLU.SoundVerse.dto.request.CreateAlbumDto;
 import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
-import com.TLU.SoundVerse.entity.Album;
 import com.TLU.SoundVerse.service.AlbumService;
 import org.springframework.web.bind.annotation.PathVariable;
 

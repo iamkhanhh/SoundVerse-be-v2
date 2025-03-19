@@ -38,7 +38,18 @@ public class CommonService {
                 .collect(Collectors.toList());
 
         List<Artist> artists = artistRepository.findAllById(topArtistIds);
-        return artists.stream().map(artist -> toArtistResponse(artist)).toList();
+        
+        return artists.stream().map(artist -> {
+                try {
+                    return toArtistResponse(artist);
+                } catch (Exception e) {
+                    System.out.println("Error when converting to ArtistResponse: " + e.getMessage());
+                    e.printStackTrace();
+                    return null;
+                }
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     public List<MusicResponse> getTopLikedMusic() {
@@ -83,6 +94,11 @@ public class CommonService {
         return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
     }
 
+    public ArtistResponse getArtistById(Integer artistId) {
+        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return toArtistResponse(artist);
+    }
+
     public ArtistResponse toArtistResponse(Artist artist) {
 
         User user = userService.getUserById(artist.getUserId());
@@ -97,7 +113,7 @@ public class CommonService {
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .country(user.getCountry())
-                .profilePicImage(s3Service.getS3Url(user.getProfilePicImage()))
+                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "default_avatar_user.jpg")
                 .fullName(user.getFullName())
                 .dob(user.getDob())
                 .songs(musics)

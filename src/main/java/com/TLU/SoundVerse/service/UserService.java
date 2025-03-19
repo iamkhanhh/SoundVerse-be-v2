@@ -11,9 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
-import com.TLU.SoundVerse.dto.response.AlbumResponse;
-import com.TLU.SoundVerse.dto.response.ArtistResponse;
-import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.User;
@@ -33,6 +30,8 @@ public class UserService {
     UserRepository userRepository;
     ArtistRepository artistRepository;
     UserMapper userMapper;
+    ArtistService artistService;
+    S3Service s3Service;
 
     public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -76,7 +75,10 @@ public class UserService {
         }
     }
 
-    public Map<String, String> getUsernameAndIdById(Integer userId) {
+    public Map<String, String> getUsernameAndIdByArtistId(Integer artistId) {
+        System.out.println("artistId: " + artistId);
+        Integer userId = artistService.getArtistIdByUserId(artistId);
+        System.out.println("userId: " + userId);
         return userRepository.findById(userId)
                 .map(user -> {
                     Map<String, String> response = new HashMap<>();
@@ -108,7 +110,7 @@ public class UserService {
             .country(user.getCountry())
             .status(user.getStatus())
             .role(user.getRole())
-            .profilePicImage(user.getProfilePicImage())
+            .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "default_avatar_user.jpg")
             .fullName(user.getFullName())
             .dob(user.getDob())
             .createdAt(user.getCreatedAt())

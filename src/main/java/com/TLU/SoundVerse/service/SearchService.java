@@ -6,30 +6,39 @@ import com.TLU.SoundVerse.dto.response.SearchResult;
 import com.TLU.SoundVerse.entity.Album;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.Music;
+import com.TLU.SoundVerse.dto.response.ArtistResponse;
+import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.dto.response.AlbumResponse;
 import com.TLU.SoundVerse.repository.AlbumRepository;
 import com.TLU.SoundVerse.repository.ArtistRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SearchService {
-
-    private final ArtistRepository artistRepository;
-    private final MusicRepository musicRepository;
-    private final AlbumRepository albumRepository;
-
-    public SearchService(ArtistRepository artistRepository, MusicRepository musicRepository, AlbumRepository albumRepository) {
-        this.artistRepository = artistRepository;
-        this.musicRepository = musicRepository;
-        this.albumRepository = albumRepository;
-    }
+    ArtistRepository artistRepository;
+    MusicRepository musicRepository;
+    AlbumRepository albumRepository;
+    CommonService commonService;
+    MusicService musicService;
+    AlbumService albumService;
 
     public SearchResult search(String keyword) {
         List<Artist> artists = artistRepository.findArtistsByUserFullName(keyword);
         List<Music> musics = musicRepository.findByTitleContainingIgnoreCase(keyword);
         List<Album> albums = albumRepository.findByTitleContainingIgnoreCase(keyword);
 
-        return new SearchResult(artists, musics, albums);
+        List<ArtistResponse> artistList = artists.stream().map(artist -> commonService.toArtistResponse(artist)).toList();
+        List<MusicResponse> musicList = musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
+        List<AlbumResponse> albumList = albums.stream().map(album -> albumService.toAlbumResponse(album)).toList();
+
+        return new SearchResult(artistList, musicList, albumList);
     }
 }

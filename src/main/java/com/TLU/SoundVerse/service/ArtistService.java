@@ -1,6 +1,7 @@
 package com.TLU.SoundVerse.service;
 
 import org.springframework.stereotype.Service;
+
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.repository.ArtistRepository;
 
@@ -22,5 +23,10 @@ public class ArtistService {
         artist.setAlbums(0);
 
         return artistRepository.save(artist);
+    }
+
+    public Integer getArtistIdByUserId(Integer userId) {
+        Artist artist = artistRepository.findById(userId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return artist.getId();
     }
 }

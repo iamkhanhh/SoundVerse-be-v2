@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Service
@@ -27,7 +26,6 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final MusicsOfPlaylistRepository musicsOfPlaylistRepository;
     MusicService musicService;
-    UserService userService;
     S3Service s3Service;
 
     public  List<PlaylistResponse> getUserPlaylists(HttpServletRequest request) {
@@ -84,9 +82,9 @@ public class PlaylistService {
             .build();
     }
 
-    public List<MusicResponse> getMusicsInPlaylist(Integer playlistId) {
-        List<MusicResponse> songs = musicService.getMusicsByPlaylistId(playlistId);
-        return songs;
+    public PlaylistResponse getPlaylistById(Integer playlistId) {
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new RuntimeException("Playlist not found!"));
+        return toPlaylistResponse(playlist);
     }
 
     public PlaylistResponse toPlaylistResponse(Playlist playlist) {
@@ -96,7 +94,7 @@ public class PlaylistService {
             .id(playlist.getId())
             .title(playlist.getTitle())
             .description(playlist.getDescription())
-            .thumbnail(s3Service.getS3Url(playlist.getThumbnail()))
+            .thumbnail(playlist.getThumbnail() != null ? s3Service.getS3Url(playlist.getThumbnail()) :  "default_playlist_thumbnail.jpg")
             .songs(songs)
             .createdAt(playlist.getCreatedAt())
             .build();
@@ -124,14 +122,6 @@ public class PlaylistService {
             .code(201)
             .message("Successfully added song to playlist")
             .status("success")
-            .build();
-    }
-
-    private PlaylistDto convertToDto(Playlist playlist) {
-        return PlaylistDto.builder()
-            .title(playlist.getTitle())
-            .description(playlist.getDescription())
-            .thumbnail(playlist.getThumbnail())
             .build();
     }
 

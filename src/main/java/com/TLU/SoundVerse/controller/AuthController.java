@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.TLU.SoundVerse.dto.request.ForgotPasswordDto;
 import com.TLU.SoundVerse.dto.request.LoginDto;
 import com.TLU.SoundVerse.dto.request.VerifiDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
@@ -51,6 +52,23 @@ public class AuthController {
         return apiResponse;
     }
 
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("access_token", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        jwtCookie.setAttribute("SameSite", "Strict");
+
+        response.addCookie(jwtCookie);
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Logout successfully");
+        return apiResponse;
+    }
+
     @PostMapping("/me")
     public ResponseEntity<?> getMyProfile(HttpServletRequest request) {
         @SuppressWarnings("unchecked")
@@ -59,15 +77,6 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String id = String.valueOf(user.get("id"));  
-        String email = (String) user.get("email");  
-        String username = (String) user.get("username");  
-        String role = (String) user.get("role");  
-    
-        System.out.println("ID: " + id);
-        System.out.println("Email: " + email);
-        System.out.println("Username: " + username);
-        System.out.println("Role: " + role);
 
         return ResponseEntity.ok(user);
     }
@@ -89,7 +98,7 @@ public class AuthController {
         ApiResponse<AuthResponse> apiResponse = new ApiResponse<AuthResponse>();
 
         apiResponse.setStatus("success");
-        apiResponse.setMessage("Login successfilly");
+        apiResponse.setMessage("Signup successfilly");
         return apiResponse;
     }
 
@@ -132,4 +141,25 @@ public class AuthController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
+    @PostMapping("/forgot_password")
+    public ResponseEntity<ApiResponse<?>> forgotPassword(@RequestBody ForgotPasswordDto input) {
+        try {
+            authService.forgotPassword(input);
+            ApiResponse<?> successResponse = ApiResponse.<Void>builder()
+                .code(200)
+                .status("success")
+                .message("Change Password Successfully")
+                .build();
+            return ResponseEntity.ok(successResponse);
+        } catch (RuntimeException e) {
+            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
+                .code(400)
+                .status("failed")
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
 }

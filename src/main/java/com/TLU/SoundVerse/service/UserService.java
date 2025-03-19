@@ -30,6 +30,7 @@ public class UserService {
     UserRepository userRepository;
     ArtistRepository artistRepository;
     UserMapper userMapper;
+    S3Service s3Service;
 
     public User create(RegisterUserDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -105,7 +106,7 @@ public class UserService {
             .country(user.getCountry())
             .status(user.getStatus())
             .role(user.getRole())
-            .profilePicImage(user.getProfilePicImage())
+            .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "default_avatar_user.jpg")
             .fullName(user.getFullName())
             .dob(user.getDob())
             .createdAt(user.getCreatedAt())

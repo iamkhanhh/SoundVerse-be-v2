@@ -25,6 +25,12 @@ public class ArtistService {
         return artistRepository.save(artist);
     }
 
+    public boolean checkSigned(Integer userId) {
+        Integer artistId = getArtistIdByUserId(userId);
+        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return artist.isSigned() == 1 ;
+    }
+
     public Integer getArtistIdByUserId(Integer userId) {
         Artist artist = artistRepository.findById(userId).orElseThrow(() -> new RuntimeException("Artist not found!"));
         return artist.getId();

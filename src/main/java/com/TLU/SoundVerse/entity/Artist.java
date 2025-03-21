@@ -24,6 +24,8 @@ public class Artist {
 
     private Integer albums;
 
+    private Integer isSigned;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

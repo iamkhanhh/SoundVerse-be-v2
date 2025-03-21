@@ -47,6 +47,14 @@ public class FollowService {
         followerRepository.delete(follower);
     }
 
+    public Boolean checkFollow(HttpServletRequest request, Integer artistId){
+        Integer userId = getUserIdFromRequest(request);
+        if (userId == null) {
+            throw new RuntimeException("User not found");
+        }
+        return followerRepository.findByUserIdAndArtistId(userId, artistId).isPresent();
+    }
+
     private Integer getUserIdFromRequest(HttpServletRequest request) {
         Object userObj = request.getAttribute("user");
 

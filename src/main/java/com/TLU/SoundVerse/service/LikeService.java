@@ -46,6 +46,14 @@ public class LikeService {
         likeRepository.delete(like);
     }
 
+    public Boolean checkLike(HttpServletRequest request, Integer musicId){
+        Integer userId = getUserIdFromRequest(request);
+        if (userId == null) {
+            throw new RuntimeException("User not found");
+        }
+        return likeRepository.findByUserIdAndMusicId(userId, musicId).isPresent();
+    }
+
     private Integer getUserIdFromRequest(HttpServletRequest request) {
         Object userObj = request.getAttribute("user");
 

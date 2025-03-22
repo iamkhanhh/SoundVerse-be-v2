@@ -31,4 +31,9 @@ public class Artist {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public String getEmail() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getEmail'");
+    }
 }

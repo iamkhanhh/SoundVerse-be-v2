@@ -1,5 +1,6 @@
 package com.TLU.SoundVerse.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
@@ -12,7 +13,12 @@ import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.MusicRepository;
 import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
+import com.TLU.SoundVerse.repository.UserRepository;
+
+import jakarta.mail.MessagingException;
+
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
+import com.TLU.SoundVerse.entity.User;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +33,8 @@ public class MusicService {
   GenreService genreService;
   UserService userService;
   MusicsOfPlaylistRepository musicsOfPlaylistRepository;
+  EmailService emailService;
+  UserRepository userRepository;
   
 
   public MusicResponse createMusic(CreateMusicDto createMusicDto, Integer user_id) {
@@ -97,5 +105,88 @@ public class MusicService {
                     .map(this::toMusicResponse)
                     .collect(Collectors.toList());
 }
+
+public List<MusicResponse> getPublishedMusicByArtistId(Integer artistId) {
+    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
+    
+    return musicList.stream()
+                    .map(this::toMusicResponse)
+                    .collect(Collectors.toList());
+}
+
+public List<MusicResponse> getPendingMusicByArtistId(Integer artistId) {
+    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
+
+    return musicList.stream()
+                    .map(this::toMusicResponse)
+                    .collect(Collectors.toList());
+}
+
+public List<MusicResponse> getPendingMusic() {
+    List<Music> musicList = musicRepository.findByStatus(MusicStatus.PENDING);
+
+    return musicList.stream()
+                    .map(this::toMusicResponse)
+                    .collect(Collectors.toList());
+}
+
+  private String getArtistEmail(Integer artistId) {
+        return userRepository.findById(artistId)
+                .map(User::getEmail)
+                .orElseThrow(() -> new RuntimeException("Artist Not Found"));
+    }
+
+    public MusicResponse publishMusic(Integer musicId) throws MessagingException {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+        music.setStatus(MusicStatus.PUBLISHED);
+        music.setUpdatedAt(LocalDateTime.now());
+        musicRepository.save(music);
+
+        String email = getArtistEmail(music.getArtistId());
+        String subject = "🎉 Bài hát đã được publish!";
+        String content = "<h3>Chúc mừng!</h3>"
+                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã sẵn sàng để phát hành trên SoundVerse! 🚀</p>";
+
+        emailService.sendEmail(email, subject, content);
+        return toMusicResponse(music);
+    }
+
+    public MusicResponse refuseMusic(Integer musicId) throws MessagingException {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+        music.setStatus(MusicStatus.REFUSED);
+        music.setUpdatedAt(LocalDateTime.now());
+        musicRepository.save(music);
+
+        String email = getArtistEmail(music.getArtistId());
+        String subject = "❌ Bài hát bị từ chối publish!";
+        String content = "<h3>Bài hát của bạn đã bị từ chối</h3>"
+                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã bị từ chối publish.</p>"
+                       + "<p>Vui lòng liên hệ với SoundVerse qua email <b>support@soundverse.com</b> để biết thêm chi tiết.</p>";
+
+        emailService.sendEmail(email, subject, content);
+        return toMusicResponse(music);
+    }
+
+    public MusicResponse approveMusic(Integer musicId) throws MessagingException {
+        Music music = musicRepository.findById(musicId)
+                .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+        music.setStatus(MusicStatus.UNPUBLISHED);
+        music.setUpdatedAt(LocalDateTime.now());
+        musicRepository.save(music);
+
+        String email = getArtistEmail(music.getArtistId());
+        String subject = "✅ Bài hát đã sẵn sàng để publish!";
+        String content = "<h3>Bài hát của bạn đã được phê duyệt</h3>"
+                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã được phê duyệt.</p>"
+                       + "<p>Bạn có thể publish khi sẵn sàng!</p>";
+
+        emailService.sendEmail(email, subject, content);
+        return toMusicResponse(music);
+    }
 
 }

@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.ArtistResponse;
+import com.TLU.SoundVerse.service.ArtistService;
 import com.TLU.SoundVerse.service.CommonService;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-import com.TLU.SoundVerse.service.ArtistService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -50,5 +48,12 @@ public class ArtistController {
     apiResponse.setMessage("Get checkSigned successfilly");
     apiResponse.setData(isSigned);
     return apiResponse;
+  }
+
+  @GetMapping("/my-stats")
+  public ApiResponse<Map<String, Integer>> getStatistics(HttpServletRequest request) {
+    System.out.println("hellloo");
+    Map<String, Integer> stats = artistService.getArtistStats(request);
+    return new ApiResponse<>(200, "Get statistics successfully", "success", stats);
   }
 }

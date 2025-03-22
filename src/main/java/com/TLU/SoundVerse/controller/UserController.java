@@ -1,17 +1,21 @@
 package com.TLU.SoundVerse.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
+import com.TLU.SoundVerse.dto.request.UserUpdateDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,12 +40,12 @@ public class UserController {
 
   // @GetMapping("/{userId}")
   // ApiResponse<User> getUsernameAndIdById(@PathVariable String userId) {
-  //   ApiResponse<User> apiResponse = new ApiResponse<User>();
+  // ApiResponse<User> apiResponse = new ApiResponse<User>();
 
-  //   apiResponse.setStatus("success");
-  //   apiResponse.setMessage("Create user successfilly");
-  //   apiResponse.setData(userService.getUsernameAndIdById(userId));
-  //   return apiResponse;
+  // apiResponse.setStatus("success");
+  // apiResponse.setMessage("Create user successfilly");
+  // apiResponse.setData(userService.getUsernameAndIdById(userId));
+  // return apiResponse;
   // }
 
   @DeleteMapping("/{userId}")
@@ -49,9 +53,16 @@ public class UserController {
     userService.deleteUser(userId);
 
     return ApiResponse.<Void>builder()
-            .status("success")
-            .message("User deleted successfully")
-            .code(200)
-            .build();
+        .status("success")
+        .message("User deleted successfully")
+        .code(200)
+        .build();
+  }
+
+  @PutMapping("/update")
+  public ResponseEntity<User> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
+    System.out.println("Ádasdsas");
+    User updatedUser = userService.updateUser(request, updateDto);
+    return ResponseEntity.ok(updatedUser);
   }
 }

@@ -5,6 +5,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+
+import com.TLU.SoundVerse.repository.ArtistRepository;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -12,6 +15,7 @@ import jakarta.mail.internet.MimeMessage;
 public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
+    ArtistRepository artistRepository;
 
     public void sendVerificationEmail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
@@ -19,6 +23,15 @@ public class EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text, true);
+        emailSender.send(message);
+    }
+
+    public void sendEmail(String to, String subject, String content) throws MessagingException {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(content, true);
         emailSender.send(message);
     }
 }

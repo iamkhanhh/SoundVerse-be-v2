@@ -1,9 +1,8 @@
 package com.TLU.SoundVerse.controller;
 
-import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,9 @@ import com.TLU.SoundVerse.dto.request.VerifiDto;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.AuthResponse;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.service.AuthService;
+import com.TLU.SoundVerse.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import lombok.AccessLevel;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
     AuthService authService;
+    UserService userService;
 
     @PostMapping("/login")
     ApiResponse<AuthResponse> authenticate(@RequestBody LoginDto request, HttpServletResponse response) {
@@ -69,16 +71,10 @@ public class AuthController {
         return apiResponse;
     }
 
-    @PostMapping("/me")
-    public ResponseEntity<?> getMyProfile(HttpServletRequest request) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
-        
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-
-        return ResponseEntity.ok(user);
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getUserById(HttpServletRequest request) {
+        UserResponse userResponse = userService.getUserInfo(request);
+        return ResponseEntity.ok(userResponse);
     }
 
 

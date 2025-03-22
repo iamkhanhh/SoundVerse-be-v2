@@ -125,5 +125,5 @@ public class SecurityConfig {
         }
         System.out.println("No access_token cookie found!");
         return null;
-    }    
+    }
 }

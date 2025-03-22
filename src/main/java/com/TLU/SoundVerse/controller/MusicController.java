@@ -3,8 +3,11 @@ package com.TLU.SoundVerse.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +17,7 @@ import com.TLU.SoundVerse.dto.response.ApiResponse;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.service.MusicService;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -54,6 +58,36 @@ public class MusicController {
     return apiResponse;
   }
 
+  @GetMapping("/published/{artistId}")
+  public ResponseEntity<List<MusicResponse>> getPublishedMusicByArtistId(@PathVariable Integer artistId) {
+    List<MusicResponse> musicList = musicService.getPublishedMusicByArtistId(artistId);
+    return ResponseEntity.ok(musicList);
+  }
+
+  @GetMapping("/pending/{artistId}")
+  public ResponseEntity<List<MusicResponse>> getPendingMusicByArtistId(@PathVariable Integer artistId) {
+    List<MusicResponse> musicList = musicService.getPendingMusicByArtistId(artistId);
+    return ResponseEntity.ok(musicList);
+  }
+
+  @GetMapping("/pending")
+  public ResponseEntity<List<MusicResponse>> getPendingMusic() {
+    List<MusicResponse> musicList = musicService.getPendingMusic();
+    return ResponseEntity.ok(musicList);
+  }
+
+ @PutMapping("/publish/{musicId}")
+    public ResponseEntity<MusicResponse> publishMusic(@PathVariable Integer musicId) throws MessagingException {
+        return ResponseEntity.ok(musicService.publishMusic(musicId));
+    }
+
+    @PutMapping("/refuse/{musicId}")
+    public ResponseEntity<MusicResponse> refuseMusic(@PathVariable Integer musicId) throws MessagingException {
+        return ResponseEntity.ok(musicService.refuseMusic(musicId));
+    }
+
+    @PutMapping("/approve/{musicId}")
+    public ResponseEntity<MusicResponse> approveMusic(@PathVariable Integer musicId) throws MessagingException {
+        return ResponseEntity.ok(musicService.approveMusic(musicId));
+    }
 }
-
-

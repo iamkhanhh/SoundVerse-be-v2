@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.response.*;
 import com.TLU.SoundVerse.entity.*;
+import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.*;
 
 import lombok.RequiredArgsConstructor;
@@ -55,12 +56,15 @@ public class CommonService {
     public List<MusicResponse> getTopLikedMusic() {
         List<Object[]> topLikedMusic = likeRepository.findTopLikedMusic();
         List<Integer> topMusicIds = topLikedMusic.stream()
-                .map(obj -> (Integer) obj[0])
-                .limit(4)
-                .collect(Collectors.toList());
-
-        List<Music> musics =  musicRepository.findAllById(topMusicIds);
-
+                    .map(obj -> (Integer) obj[0])
+                    .limit(4)
+                    .collect(Collectors.toList());
+    
+        List<Music> musics = musicRepository.findAllById(topMusicIds)
+                                            .stream()
+                                            .filter(music -> music.getStatus() == MusicStatus.PUBLISHED)
+                                            .collect(Collectors.toList());
+    
         return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
     }
 
@@ -69,16 +73,19 @@ public class CommonService {
                 .stream()
                 .map(f -> f.getArtistId())
                 .collect(Collectors.toList());
-
+    
         List<Music> musicList = musicRepository.findAll()
                 .stream()
-                .filter(m -> followedArtistIds.contains(m.getArtistId()))
+                .filter(m -> followedArtistIds.contains(m.getArtistId()) && m.getStatus() == MusicStatus.PUBLISHED) 
                 .collect(Collectors.toList());
-
+    
         if (musicList.size() < 6) {
-            List<Music> additionalMusic = musicRepository.findAll();
+            List<Music> additionalMusic = musicRepository.findAll()
+                    .stream()
+                    .filter(m -> m.getStatus() == MusicStatus.PUBLISHED)
+                    .collect(Collectors.toList());
             Collections.shuffle(additionalMusic);
-
+    
             for (Music music : additionalMusic) {
                 if (!musicList.contains(music)) {
                     musicList.add(music);
@@ -88,22 +95,27 @@ public class CommonService {
                 }
             }
         }
-
+    
         Collections.shuffle(musicList);
         List<Music> musics = musicList.stream().limit(6).collect(Collectors.toList());
         return musics.stream().map(music -> musicService.toMusicResponse(music)).toList();
     }
 
     public ArtistResponse getArtistById(Integer artistId) {
-        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        Optional<Artist> artistOptional = artistRepository.findById(artistId);
+
+        if (artistOptional.isEmpty()) {
+            throw new RuntimeException("Artist not found with ID: " + artistId);
+        }
+
+        Artist artist = artistOptional.get();
         return toArtistResponse(artist);
     }
 
     public ArtistResponse toArtistResponse(Artist artist) {
 
         User user = userService.getUserById(artist.getUserId());
-
-        List<MusicResponse> musics = musicService.getMusic(user.getId());
+        List<MusicResponse> musics = musicService.getPublishedMusicByArtistId(user.getId());
 
         List<AlbumResponse> albums  = albumService.getMusic(user.getId());
 
@@ -121,4 +133,6 @@ public class CommonService {
                 .createdAt(artist.getCreatedAt())
                 .build();
     }
+
+   
 }

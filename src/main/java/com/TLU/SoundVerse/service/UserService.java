@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
+import com.TLU.SoundVerse.dto.request.UserUpdateDto;
 import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.User;
@@ -19,6 +20,7 @@ import com.TLU.SoundVerse.mapper.UserMapper;
 import com.TLU.SoundVerse.repository.ArtistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -49,8 +51,8 @@ public class UserService {
     public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                    .map(this::toUserResponse)
-                    .collect(Collectors.toList());
+                .map(this::toUserResponse)
+                .collect(Collectors.toList());
     }
 
     // public User updateUser(String userId, UpdateUserDto updateUserDto) {
@@ -101,19 +103,85 @@ public class UserService {
         return artist.getId();
     }
 
+    public UserResponse getUserInfo(HttpServletRequest request) {
+        Integer userId = getUserIdFromRequest(request);
+
+        if (userId == null) {
+            throw new RuntimeException("User ID not found in request");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        return toUserResponse(user);
+    }
+
+    private Integer getUserIdFromRequest(HttpServletRequest request) {
+        Object userObj = request.getAttribute("user");
+
+        if (userObj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> user = (Map<String, Object>) userObj;
+
+            Object idObj = user.get("id");
+            if (idObj != null) {
+                try {
+                    return Integer.parseInt(idObj.toString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public User updateUser(HttpServletRequest request, UserUpdateDto updateDto) {
+        System.out.println(updateDto);
+        Integer userId = getUserIdFromRequest(request);
+        if (userId == null) {
+            throw new RuntimeException("User ID not found in request");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        if (updateDto.getUsername() != null)
+            user.setUsername(updateDto.getUsername());
+        if (updateDto.getEmail() != null)
+            user.setEmail(updateDto.getEmail());
+        if (updateDto.getGender() != null)
+            user.setGender(updateDto.getGender());
+        if (updateDto.getCountry() != null)
+            user.setCountry(updateDto.getCountry());
+        if (updateDto.getFullName() != null)
+            user.setFullName(updateDto.getFullName());
+        if (updateDto.getProfilePicImage() != null)
+            user.setProfilePicImage(updateDto.getProfilePicImage());
+        if (updateDto.getDob() != null)
+            user.setDob(updateDto.getDob());
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        if (updateDto.getPassword() != null && !updateDto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
+        }
+
+        return userRepository.save(user);
+    }
+
     public UserResponse toUserResponse(User user) {
         return UserResponse.builder()
-            .id(user.getId())
-            .username(user.getUsername())
-            .email(user.getEmail())
-            .gender(user.getGender())
-            .country(user.getCountry())
-            .status(user.getStatus())
-            .role(user.getRole())
-            .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "default_avatar_user.jpg")
-            .fullName(user.getFullName())
-            .dob(user.getDob())
-            .createdAt(user.getCreatedAt())
-            .build();
-  } 
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .country(user.getCountry())
+                .status(user.getStatus())
+                .role(user.getRole())
+                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage())
+                        : "default_avatar_user.jpg")
+                .fullName(user.getFullName())
+                .dob(user.getDob())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 }

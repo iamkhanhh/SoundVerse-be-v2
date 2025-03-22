@@ -3,7 +3,9 @@ package com.TLU.SoundVerse.service;
 import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -12,6 +14,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -33,6 +37,13 @@ public class S3Service {
   @Value("${aws.bucketName}")
   private String bucketName;
 
+  public S3Client getS3Client() {
+    return S3Client.builder()
+        .region(Region.of(region))
+        .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
+        .build();
+  }
+
   private S3Presigner getPresigner() {
     return S3Presigner.builder()
         .region(Region.of(region))
@@ -43,7 +54,7 @@ public class S3Service {
 
   public String createPresignedUrl(String fileName, Integer user_id) {
     try (S3Presigner presigner = getPresigner()) {
-      String objectKey = user_id + "/" + fileName; 
+      String objectKey = user_id + "/" + fileName;
 
       PutObjectRequest objectRequest = PutObjectRequest.builder()
           .bucket(bucketName)
@@ -63,7 +74,7 @@ public class S3Service {
 
   public String createPresignedUrlForThumbnail(String fileName, Integer user_id) {
     try (S3Presigner presigner = getPresigner()) {
-      String objectKey = user_id + "/thumbnails/" + fileName; 
+      String objectKey = user_id + "/thumbnails/" + fileName;
       String contentType = getContentType(fileName);
       System.out.println(contentType);
 
@@ -100,6 +111,22 @@ public class S3Service {
     }
   }
 
+  public String uploadFile(byte[] fileContent, String fileName, Integer userId) {
+    try (S3Client s3Client = getS3Client()) {
+      String objectKey = userId + "/contract/" + generateFileName(fileName);
+
+      PutObjectRequest putRequest = PutObjectRequest.builder()
+          .bucket(bucketName)
+          .key(objectKey)
+          .contentType("application/pdf")
+          .build();
+
+      InputStream fileInputStream = new ByteArrayInputStream(fileContent);
+      s3Client.putObject(putRequest, RequestBody.fromInputStream(fileInputStream, fileContent.length));
+      return objectKey;
+    }
+  }
+
   public String generateFileName(String name) {
     name = name.replaceAll("\\s+", "_").trim();
 
@@ -116,13 +143,13 @@ public class S3Service {
 
   private String getContentType(String fileName) {
     if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
-        return "image/jpeg";
+      return "image/jpeg";
     } else if (fileName.endsWith(".png")) {
-        return "image/png";
+      return "image/png";
     } else if (fileName.endsWith(".gif")) {
-        return "image/gif";
+      return "image/gif";
     } else if (fileName.endsWith(".webp")) {
-        return "image/webp";
+      return "image/webp";
     }
     return "application/octet-stream";
   }

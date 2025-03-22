@@ -78,9 +78,7 @@ public class UserService {
     }
 
     public Map<String, String> getUsernameAndIdByArtistId(Integer artistId) {
-        System.out.println("artistId: " + artistId);
         Integer userId = artistService.getArtistIdByUserId(artistId);
-        System.out.println("userId: " + userId);
         return userRepository.findById(userId)
                 .map(user -> {
                     Map<String, String> response = new HashMap<>();

@@ -36,6 +36,20 @@ public class ArtistController {
     return apiResponse;
   }
 
+  @GetMapping("/check-signed")
+  ApiResponse<Boolean> checkSigned(HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
+    Boolean isSigned = artistService.checkSigned(id);
+
+    ApiResponse<Boolean> apiResponse = new ApiResponse<Boolean>();
+    apiResponse.setStatus("success");
+    apiResponse.setMessage("Get checkSigned successfilly");
+    apiResponse.setData(isSigned);
+    return apiResponse;
+  }
+
   @GetMapping("/my-stats")
   public ApiResponse<Map<String, Integer>> getStatistics(HttpServletRequest request) {
     System.out.println("hellloo");

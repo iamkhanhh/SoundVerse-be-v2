@@ -31,10 +31,22 @@ public class ArtistService {
         artist.setUserId(userId);
         artist.setListOfMusic(0);
         artist.setAlbums(0);
+        artist.setIsSigned(0);
 
         return artistRepository.save(artist);
     }
 
+    public boolean checkSigned(Integer userId) {
+        Integer artistId = getArtistIdByUserId(userId);
+        Artist artist = artistRepository.findById(artistId).orElseThrow(() -> new RuntimeException("Artist not found!"));
+        return artist.getIsSigned() == 1 ;
+    }
+
+    public void signContract(Integer userId) {
+        Artist artist = artistRepository.findByUserId(userId);
+        artist.setIsSigned(1);
+        artistRepository.save(artist);
+    }
     // public Integer getArtistIdByUserId(Integer userId) {
     //     Artist artist = artistRepository.findById(userId).orElseThrow(() -> new RuntimeException("Artist not found!"));
     //     return artist.getId();

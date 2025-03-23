@@ -99,62 +99,59 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<?>> verifyUser(@RequestBody VerifiDto verifyUserDto) {
+    public ApiResponse<Void> verifyUser(@RequestBody VerifiDto verifyUserDto) {
         try {
             authService.verifyUser(verifyUserDto);
-            ApiResponse<?> response = ApiResponse.<Void>builder()
-                .code(200)
-                .status("success")
-                .message("Account verified successfully")
-                .build();
-            return ResponseEntity.ok(response);
+
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.setStatus("success");
+            apiResponse.setMessage("Account verified successfully");
+
+            return apiResponse;
         } catch (RuntimeException e) {
-            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
-                .code(400)
-                .status("failed")
-                .message(e.getMessage())
-                .build();
-            return ResponseEntity.badRequest().body(errorResponse);
+            ApiResponse<Void> errorResponse = new ApiResponse<>();
+            errorResponse.setStatus("failed");
+            errorResponse.setMessage(e.getMessage());
+
+            return errorResponse;
         }
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<ApiResponse<?>> resendVerificationCode(@RequestParam String email) {
+    public ApiResponse<Void> resendVerificationCode(@RequestParam String email) {
         try {
             authService.resendVerificationCode(email);
-            ApiResponse<?> response = ApiResponse.<Void>builder()
-                .code(200)
-                .status("success")
-                .message("Verification code sent")
-                .build();
-            return ResponseEntity.ok(response);
+
+            ApiResponse<Void> apiResponse = new ApiResponse<>();
+            apiResponse.setStatus("success");
+            apiResponse.setMessage("Verification code sent");
+
+            return apiResponse;
         } catch (RuntimeException e) {
-            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
-                .code(400)
-                .status("failed")
-                .message(e.getMessage())
-                .build();
-            return ResponseEntity.badRequest().body(errorResponse);
+            ApiResponse<Void> errorResponse = new ApiResponse<>();
+            errorResponse.setStatus("failed");
+            errorResponse.setMessage(e.getMessage());
+
+            return errorResponse;
         }
     }
 
     @PostMapping("/forgot_password")
-    public ResponseEntity<ApiResponse<?>> forgotPassword(@RequestBody ForgotPasswordDto input) {
+    public ApiResponse<Void> forgotPassword(@RequestBody ForgotPasswordDto input) {
         try {
             authService.forgotPassword(input);
-            ApiResponse<?> successResponse = ApiResponse.<Void>builder()
-                .code(200)
-                .status("success")
-                .message("Change Password Successfully")
-                .build();
-            return ResponseEntity.ok(successResponse);
+
+            ApiResponse<Void> successResponse = new ApiResponse<>();
+            successResponse.setStatus("success");
+            successResponse.setMessage("Change Password Successfully");
+
+            return successResponse;
         } catch (RuntimeException e) {
-            ApiResponse<?> errorResponse = ApiResponse.<Void>builder()
-                .code(400)
-                .status("failed")
-                .message(e.getMessage())
-                .build();
-            return ResponseEntity.badRequest().body(errorResponse);
+            ApiResponse<Void> errorResponse = new ApiResponse<>();
+            errorResponse.setStatus("failed");
+            errorResponse.setMessage(e.getMessage());
+
+            return errorResponse;
         }
     }
 

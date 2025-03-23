@@ -9,13 +9,16 @@ import org.springframework.stereotype.Service;
 
 import com.TLU.SoundVerse.dto.request.CreateMusicDto;
 import com.TLU.SoundVerse.dto.response.MusicResponse;
+import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
+import com.TLU.SoundVerse.repository.ArtistRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 import com.TLU.SoundVerse.entity.User;
@@ -35,7 +38,7 @@ public class MusicService {
   MusicsOfPlaylistRepository musicsOfPlaylistRepository;
   EmailService emailService;
   UserRepository userRepository;
-  
+  ArtistRepository artistRepository;
 
   public MusicResponse createMusic(CreateMusicDto createMusicDto, Integer user_id) {
     Integer artistId = userService.getArtistIdByUserId(user_id);
@@ -100,22 +103,6 @@ public class MusicService {
 
   public List<MusicResponse> getAllMusic() {
     List<Music> musicList = musicRepository.findAll();
-
-    return musicList.stream()
-                    .map(this::toMusicResponse)
-                    .collect(Collectors.toList());
-}
-
-public List<MusicResponse> getPublishedMusicByArtistId(Integer artistId) {
-    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
-    
-    return musicList.stream()
-                    .map(this::toMusicResponse)
-                    .collect(Collectors.toList());
-}
-
-public List<MusicResponse> getPendingMusicByArtistId(Integer artistId) {
-    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
 
     return musicList.stream()
                     .map(this::toMusicResponse)
@@ -188,5 +175,64 @@ public List<MusicResponse> getPendingMusic() {
         emailService.sendEmail(email, subject, content);
         return toMusicResponse(music);
     }
+
+    public List<MusicResponse> getPublishedMusicByArtistId(HttpServletRequest request) {
+      Integer userId = getUserIdFromRequest(request);  
+      if (userId == null) {
+        
+          throw new IllegalArgumentException("User ID is not available in the request");
+      }
+      
+      Integer artistId = getArtistIdByUserId(userId);  // Lấy artistId từ userId
+      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
+      
+      return musicList.stream()
+                      .map(this::toMusicResponse)
+                      .collect(Collectors.toList());
+  }
+  
+  public List<MusicResponse> getPendingMusicByArtistId(HttpServletRequest request) {
+      Integer userId = getUserIdFromRequest(request);  
+      if (userId == null) {
+     
+          throw new IllegalArgumentException("User ID is not available in the request");
+      }
+      
+      Integer artistId = getArtistIdByUserId(userId);  
+      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
+      
+      return musicList.stream()
+                      .map(this::toMusicResponse)
+                      .collect(Collectors.toList());
+  }
+  
+
+    public Integer getArtistIdByUserId(Integer userId) {
+
+        Artist artist = artistRepository.findByUserId(userId);
+
+        return artist.getId();
+    }
+
+  private Integer getUserIdFromRequest(HttpServletRequest request) {
+    Object userObj = request.getAttribute("user");
+
+    if (userObj instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> user = (Map<String, Object>) userObj;
+
+        Object idObj = user.get("id");
+        if (idObj != null) {
+            try {
+                return Integer.parseInt(idObj.toString());
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+    }
+    return null;
+}
+
+  
 
 }

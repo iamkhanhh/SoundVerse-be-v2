@@ -49,7 +49,7 @@ public class MusicController {
     @SuppressWarnings("unchecked")
     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
     Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    List<MusicResponse> music = musicService.getMusic(id);
+    List<MusicResponse> music = musicService.getPublishedMusicByArtistId(id);
 
     ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<List<MusicResponse>>();
     apiResponse.setStatus("success");

@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
@@ -17,14 +16,14 @@ public class UserUpdateDto {
     private String username;
 
     @Size(min = 8, message = "Password must be at least 8 characters")
-    private String password;  // Trường này chỉ được cập nhật nếu có giá trị
-
-    @Email
-    private String email;
+    private String password;
 
     private String gender;
+
     private String country;
+
     private String fullName;
+
     private String profilePicImage;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")

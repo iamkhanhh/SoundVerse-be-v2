@@ -27,7 +27,7 @@ public class FollowerController {
         return ResponseEntity.ok("Followed successfully!");
     }
 
-        @GetMapping("/{artistId}")
+    @GetMapping("/{artistId}")
     public ApiResponse<Boolean> checkFollow(@PathVariable Integer artistId, HttpServletRequest request) {
         Boolean isFollow = followService.checkFollow(request, artistId);
         ApiResponse<Boolean> apiResponse = new ApiResponse<Boolean>();

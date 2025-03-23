@@ -125,7 +125,7 @@ public class CommonService {
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .country(user.getCountry())
-                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "default_avatar_user.jpg")
+                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "/default_avatar_user.jpg")
                 .fullName(user.getFullName())
                 .dob(user.getDob())
                 .songs(musics)

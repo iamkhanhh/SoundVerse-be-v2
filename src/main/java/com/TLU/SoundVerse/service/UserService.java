@@ -145,8 +145,6 @@ public class UserService {
 
         if (updateDto.getUsername() != null)
             user.setUsername(updateDto.getUsername());
-        if (updateDto.getEmail() != null)
-            user.setEmail(updateDto.getEmail());
         if (updateDto.getGender() != null)
             user.setGender(updateDto.getGender());
         if (updateDto.getCountry() != null)
@@ -158,8 +156,8 @@ public class UserService {
         if (updateDto.getDob() != null)
             user.setDob(updateDto.getDob());
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (updateDto.getPassword() != null && !updateDto.getPassword().isEmpty()) {
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
         }
 
@@ -175,8 +173,7 @@ public class UserService {
                 .country(user.getCountry())
                 .status(user.getStatus())
                 .role(user.getRole())
-                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage())
-                        : "default_avatar_user.jpg")
+                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "/default_avatar_user.jpg")
                 .fullName(user.getFullName())
                 .dob(user.getDob())
                 .createdAt(user.getCreatedAt())

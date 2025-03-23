@@ -62,9 +62,8 @@ public class MusicController {
     
     @GetMapping("/my-music")
     public ApiResponse<List<MusicResponse>> getPublishedMusic(HttpServletRequest request) {
-      
-        List<MusicResponse> musicList = musicService.getPublishedMusicByArtistId(request);
-
+        Integer userId = getUserIdFromRequest(request);
+        List<MusicResponse> musicList = musicService.getPublishedMusicByArtistId(userId);
         ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setStatus("success");
         apiResponse.setMessage("Get Published Music successfully");
@@ -72,15 +71,26 @@ public class MusicController {
         return apiResponse;
     }
 
-    
     @GetMapping("/my-pending")
     public ApiResponse<List<MusicResponse>> getPendingMusic(HttpServletRequest request) {
-      
-        List<MusicResponse> musicList = musicService.getPendingMusicByArtistId(request);
+        Integer userId = getUserIdFromRequest(request);
+        List<MusicResponse> musicList = musicService.getPendingMusicByArtistId(userId);
 
         ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setStatus("success");
         apiResponse.setMessage("Get Pending Music successfully");
+        apiResponse.setData(musicList);
+        return apiResponse;
+    }
+
+    @GetMapping("/my-unpublish")
+    public ApiResponse<List<MusicResponse>> getUnpublishMusic(HttpServletRequest request) {
+        Integer userId = getUserIdFromRequest(request);
+        List<MusicResponse> musicList = musicService.getUnpublishMusicByArtistId(userId);
+
+        ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Get unpublished Music successfully");
         apiResponse.setData(musicList);
         return apiResponse;
     }
@@ -131,5 +141,24 @@ public class MusicController {
         apiResponse.setMessage("Music approved successfully");
         apiResponse.setData(musicResponse);
         return apiResponse;
+    }
+
+    private Integer getUserIdFromRequest(HttpServletRequest request) {
+        Object userObj = request.getAttribute("user");
+    
+        if (userObj instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> user = (Map<String, Object>) userObj;
+    
+            Object idObj = user.get("id");
+            if (idObj != null) {
+                try {
+                    return Integer.parseInt(idObj.toString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -117,6 +117,13 @@ public List<MusicResponse> getPendingMusic() {
                     .collect(Collectors.toList());
 }
 
+  public List<MusicResponse> getUnpublishMusicByArtistId(Integer userId) {
+      Integer artistId = userService.getArtistIdByUserId(userId);
+      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.UNPUBLISHED);
+      
+      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+  }
+
   private String getArtistEmail(Integer artistId) {
         return userRepository.findById(artistId)
                 .map(User::getEmail)
@@ -176,35 +183,20 @@ public List<MusicResponse> getPendingMusic() {
         return toMusicResponse(music);
     }
 
-    public List<MusicResponse> getPublishedMusicByArtistId(HttpServletRequest request) {
-      Integer userId = getUserIdFromRequest(request);  
-      if (userId == null) {
-        
-          throw new IllegalArgumentException("User ID is not available in the request");
-      }
-      
-      Integer artistId = getArtistIdByUserId(userId);  // Lấy artistId từ userId
+    public List<MusicResponse> getPublishedMusicByArtistId(Integer userId) {
+      Integer artistId = userService.getArtistIdByUserId(userId);
       List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
       
-      return musicList.stream()
-                      .map(this::toMusicResponse)
-                      .collect(Collectors.toList());
+      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
   
-  public List<MusicResponse> getPendingMusicByArtistId(HttpServletRequest request) {
-      Integer userId = getUserIdFromRequest(request);  
-      if (userId == null) {
-     
-          throw new IllegalArgumentException("User ID is not available in the request");
-      }
-      
-      Integer artistId = getArtistIdByUserId(userId);  
+  public List<MusicResponse> getPendingMusicByArtistId(Integer userId) {
+      Integer artistId = userService.getArtistIdByUserId(userId);
       List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
       
-      return musicList.stream()
-                      .map(this::toMusicResponse)
-                      .collect(Collectors.toList());
+      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
+  
   
 
     public Integer getArtistIdByUserId(Integer userId) {
@@ -214,24 +206,7 @@ public List<MusicResponse> getPendingMusic() {
         return artist.getId();
     }
 
-  private Integer getUserIdFromRequest(HttpServletRequest request) {
-    Object userObj = request.getAttribute("user");
-
-    if (userObj instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> user = (Map<String, Object>) userObj;
-
-        Object idObj = user.get("id");
-        if (idObj != null) {
-            try {
-                return Integer.parseInt(idObj.toString());
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-    }
-    return null;
-}
+  
 
   
 

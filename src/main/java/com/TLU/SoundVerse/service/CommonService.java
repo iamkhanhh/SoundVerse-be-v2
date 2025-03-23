@@ -115,7 +115,7 @@ public class CommonService {
     public ArtistResponse toArtistResponse(Artist artist) {
 
         User user = userService.getUserById(artist.getUserId());
-        // List<MusicResponse> musics = musicService.getPublishedMusicByArtistId(user.getId());
+        List<MusicResponse> musics = musicService.getPublishedMusicByArtistId(user.getId());
 
         List<AlbumResponse> albums  = albumService.getMusic(user.getId());
 

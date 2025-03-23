@@ -41,6 +41,21 @@ public class ContractController {
     return apiResponse;
   }
 
+
+  @GetMapping("/export-contract")
+  ApiResponse<String> exportContract(HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
+    String url = contractService.exportContract(id);
+
+    ApiResponse<String> apiResponse = new ApiResponse<String>();
+    apiResponse.setStatus("success");
+    apiResponse.setMessage("Export contract successfilly");
+    apiResponse.setData(url);
+    return apiResponse;
+  }
+
   @PostMapping("/sign-contract")
   ApiResponse<Contract> signContract(HttpServletRequest request, @RequestBody SignContractDto dto) throws IOException {
     @SuppressWarnings("unchecked")

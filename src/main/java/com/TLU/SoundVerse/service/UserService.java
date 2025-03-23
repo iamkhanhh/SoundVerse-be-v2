@@ -152,7 +152,7 @@ public class UserService {
         if (updateDto.getFullName() != null)
             user.setFullName(updateDto.getFullName());
         if (updateDto.getProfilePicImage() != null)
-            user.setProfilePicImage(updateDto.getProfilePicImage());
+            user.setProfilePicImage(userId + "/thumbnails/" + updateDto.getProfilePicImage());
         if (updateDto.getDob() != null)
             user.setDob(updateDto.getDob());
 

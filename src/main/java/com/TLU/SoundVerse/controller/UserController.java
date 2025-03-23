@@ -60,9 +60,12 @@ public class UserController {
   }
 
   @PutMapping("/update")
-  public ResponseEntity<User> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
-    System.out.println("Ádasdsas");
+  public ApiResponse<Void> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
     User updatedUser = userService.updateUser(request, updateDto);
-    return ResponseEntity.ok(updatedUser);
+        return ApiResponse.<Void>builder()
+        .status("success")
+        .message("Update prfile successfully")
+        .code(200)
+        .build();
   }
 }

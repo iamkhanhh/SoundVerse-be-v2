@@ -106,6 +106,12 @@ public class ContractService {
     return outputStream.toByteArray();
   }
 
+  public String exportContract(Integer userId) {
+    Contract contract = contractRepository.findByUserId(userId);
+
+    return s3Service.getS3Url(contract.getFilePath());
+  }
+
   public ContractResponse toContractResponse(Contract contract) {
     return ContractResponse.builder()
       .contractNumber(contract.getContractNumber())

@@ -45,19 +45,12 @@ public class MusicController {
         return apiResponse;
     }
 
-
     @GetMapping
-    public ApiResponse<List<MusicResponse>> getMusic(HttpServletRequest request) {
+    ApiResponse<List<MusicResponse>> getMusic(HttpServletRequest request) {
         @SuppressWarnings("unchecked")
         Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
         Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-        List<MusicResponse> music = musicService.getMusic(id);
-  @GetMapping
-  ApiResponse<List<MusicResponse>> getMusic(HttpServletRequest request) {
-    @SuppressWarnings("unchecked")
-    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
-    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    List<MusicResponse> music = musicService.getPublishedMusicByArtistId(id);
+        List<MusicResponse> music = musicService.getPublishedMusicByArtistId(id);
 
         ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setStatus("success");
@@ -67,7 +60,7 @@ public class MusicController {
     }
 
     
-    @GetMapping("/my-published")
+    @GetMapping("/my-music")
     public ApiResponse<List<MusicResponse>> getPublishedMusic(HttpServletRequest request) {
       
         List<MusicResponse> musicList = musicService.getPublishedMusicByArtistId(request);

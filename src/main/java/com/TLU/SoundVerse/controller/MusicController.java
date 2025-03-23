@@ -83,6 +83,18 @@ public class MusicController {
         return apiResponse;
     }
 
+    @GetMapping("/my-unpublish")
+    public ApiResponse<List<MusicResponse>> getUnpublishMusic(HttpServletRequest request) {
+        Integer userId = getUserIdFromRequest(request);
+        List<MusicResponse> musicList = musicService.getUnpublishMusicByArtistId(userId);
+
+        ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Get unpublished Music successfully");
+        apiResponse.setData(musicList);
+        return apiResponse;
+    }
+
     
     @GetMapping("/pending")
     public ApiResponse<List<MusicResponse>> getPendingMusic() {

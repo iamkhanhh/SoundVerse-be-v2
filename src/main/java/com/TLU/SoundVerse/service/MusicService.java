@@ -117,6 +117,13 @@ public List<MusicResponse> getPendingMusic() {
                     .collect(Collectors.toList());
 }
 
+  public List<MusicResponse> getUnpublishMusicByArtistId(Integer userId) {
+      Integer artistId = userService.getArtistIdByUserId(userId);
+      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.UNPUBLISHED);
+      
+      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+  }
+
   private String getArtistEmail(Integer artistId) {
         return userRepository.findById(artistId)
                 .map(User::getEmail)

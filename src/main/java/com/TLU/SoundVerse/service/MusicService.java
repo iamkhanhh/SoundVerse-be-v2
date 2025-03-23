@@ -18,7 +18,6 @@ import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 import com.TLU.SoundVerse.entity.User;

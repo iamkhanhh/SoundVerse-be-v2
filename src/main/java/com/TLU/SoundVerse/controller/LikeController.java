@@ -1,7 +1,6 @@
 package com.TLU.SoundVerse.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.TLU.SoundVerse.dto.response.ApiResponse;
@@ -16,26 +15,41 @@ public class LikeController {
     @Autowired
     private LikeService likeService;
 
+    
     @PostMapping("/{musicId}")
-    public ResponseEntity<String> likeMusic(@PathVariable Integer musicId, HttpServletRequest request) {
+    public ApiResponse<String> likeMusic(@PathVariable Integer musicId, HttpServletRequest request) {
         likeService.isUserLiked(request, musicId);
-        return ResponseEntity.ok("Liked successfully!");
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Liked successfully!");
+        apiResponse.setData("Liked successfully!");
+
+        return apiResponse;
     }
 
+  
     @GetMapping("/{musicId}")
     public ApiResponse<Boolean> checkLike(@PathVariable Integer musicId, HttpServletRequest request) {
         Boolean isLike = likeService.checkLike(request, musicId);
-        ApiResponse<Boolean> apiResponse = new ApiResponse<Boolean>();
 
+        ApiResponse<Boolean> apiResponse = new ApiResponse<>();
         apiResponse.setStatus("success");
-        apiResponse.setMessage("Check like successfilly");
+        apiResponse.setMessage("Check like successfully");
         apiResponse.setData(isLike);
+
         return apiResponse;
     }
 
     @DeleteMapping("/{musicId}")
-    public ResponseEntity<String> unlikeMusic(@PathVariable Integer musicId, HttpServletRequest request) {
+    public ApiResponse<String> unlikeMusic(@PathVariable Integer musicId, HttpServletRequest request) {
         likeService.unlikeMusic(request, musicId);
-        return ResponseEntity.ok("Unliked successfully!");
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Unliked successfully!");
+        apiResponse.setData("Unliked successfully!");
+
+        return apiResponse;
     }
 }

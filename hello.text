@@ -1,1 +1,5 @@
-dsadasd
+
+docker network create sound-verse
+docker run --name db --network sound-verse -p 3306:3306 -e MYSQL_ROOT_PASSWORD=khanh123 -d mysql:8.0.33
+docker run -d --name sound-verse-be --network sound-verse -p 8080:8080 iamkhanh/sound-verse:0.3.0
+docker run -d --name sound-verse-fe --network sound-verse -p 3000:3000 iamkhanh/sound-verse-fe:0.1.0

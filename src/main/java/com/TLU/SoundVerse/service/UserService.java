@@ -134,12 +134,10 @@ public class UserService {
     }
 
     public User updateUser(HttpServletRequest request, UserUpdateDto updateDto) {
-        System.out.println(updateDto);
         Integer userId = getUserIdFromRequest(request);
         if (userId == null) {
             throw new RuntimeException("User ID not found in request");
         }
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
 
@@ -156,8 +154,11 @@ public class UserService {
         if (updateDto.getDob() != null)
             user.setDob(updateDto.getDob());
 
-        if (updateDto.getPassword() != null && !updateDto.getPassword().isEmpty()) {
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(8);
+        if (updateDto.getCurrentPassword() != null && updateDto.getPassword() != null) {
+            if (!passwordEncoder.matches(updateDto.getCurrentPassword(), user.getPassword())) {
+                throw new RuntimeException("Current password is incorrect");
+            }
             user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
         }
 
@@ -173,7 +174,8 @@ public class UserService {
                 .country(user.getCountry())
                 .status(user.getStatus())
                 .role(user.getRole())
-                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage()) : "/default_avatar_user.jpg")
+                .profilePicImage(user.getProfilePicImage() != null ? s3Service.getS3Url(user.getProfilePicImage())
+                        : "/default_avatar_user.jpg")
                 .fullName(user.getFullName())
                 .dob(user.getDob())
                 .createdAt(user.getCreatedAt())

@@ -97,6 +97,8 @@ public class AuthService {
         User user = new User();
         user.setUsername(input.getUsername());
         user.setEmail(input.getEmail());
+        user.setDob(input.getDob());
+        user.setCountry(input.getCountry());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
@@ -176,24 +178,4 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    // public String changePassword(String userEmail, ChangePasswordDto changePasswordDto) {
-    //     User user = userRepository.findByEmail(userEmail)
-    //             .orElseThrow(() -> new RuntimeException("User not found"));
-
-    //     // Kiểm tra mật khẩu cũ
-    //     if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())) {
-    //         throw new RuntimeException("Current password is incorrect");
-    //     }
-
-    //     // Kiểm tra xác nhận mật khẩu
-    //     if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())) {
-    //         throw new RuntimeException("New passwords do not match");
-    //     }
-
-    //     // Cập nhật mật khẩu mới
-    //     user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
-    //     userRepository.save(user);
-
-    //     return "Password changed successfully!";
-    // }
 }

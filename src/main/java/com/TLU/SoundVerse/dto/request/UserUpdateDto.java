@@ -16,6 +16,9 @@ public class UserUpdateDto {
     private String username;
 
     @Size(min = 8, message = "Password must be at least 8 characters")
+    private String currentPassword;
+
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     private String gender;

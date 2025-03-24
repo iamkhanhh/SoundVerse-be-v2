@@ -1,6 +1,5 @@
 package com.TLU.SoundVerse.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,16 +37,6 @@ public class UserController {
     return apiResponse;
   }
 
-  // @GetMapping("/{userId}")
-  // ApiResponse<User> getUsernameAndIdById(@PathVariable String userId) {
-  // ApiResponse<User> apiResponse = new ApiResponse<User>();
-
-  // apiResponse.setStatus("success");
-  // apiResponse.setMessage("Create user successfilly");
-  // apiResponse.setData(userService.getUsernameAndIdById(userId));
-  // return apiResponse;
-  // }
-
   @DeleteMapping("/{userId}")
   ApiResponse<Void> deletUser(@PathVariable String userId) {
     userService.deleteUser(userId);
@@ -61,8 +50,8 @@ public class UserController {
 
   @PutMapping("/update")
   public ApiResponse<Void> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
-    User updatedUser = userService.updateUser(request, updateDto);
-        return ApiResponse.<Void>builder()
+    userService.updateUser(request, updateDto);
+    return ApiResponse.<Void>builder()
         .status("success")
         .message("Update prfile successfully")
         .code(200)

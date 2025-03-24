@@ -18,7 +18,6 @@ import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
 
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 
 import com.TLU.SoundVerse.entity.MusicsOfPlaylist;
 import com.TLU.SoundVerse.entity.User;
@@ -139,9 +138,9 @@ public List<MusicResponse> getPendingMusic() {
         musicRepository.save(music);
 
         String email = getArtistEmail(music.getArtistId());
-        String subject = "🎉 Bài hát đã được publish!";
-        String content = "<h3>Chúc mừng!</h3>"
-                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã sẵn sàng để phát hành trên SoundVerse! 🚀</p>";
+        String subject = "🎉 The song has been published!";
+        String content = "<h3>Congratulations!</h3>"
+                      + "<p>The song <b>'" + music.getTitle() + "'</b> is now ready to be released on SoundVerse! 🚀</p>";
 
         emailService.sendEmail(email, subject, content);
         return toMusicResponse(music);
@@ -156,10 +155,11 @@ public List<MusicResponse> getPendingMusic() {
         musicRepository.save(music);
 
         String email = getArtistEmail(music.getArtistId());
-        String subject = "❌ Bài hát bị từ chối publish!";
-        String content = "<h3>Bài hát của bạn đã bị từ chối</h3>"
-                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã bị từ chối publish.</p>"
-                       + "<p>Vui lòng liên hệ với SoundVerse qua email <b>support@soundverse.com</b> để biết thêm chi tiết.</p>";
+        String subject = "❌ The song was rejected for publishing!";
+        String content = "<h3>Your song has been rejected</h3>"
+                      + "<p>The song <b>'" + music.getTitle() + "'</b> has been rejected for publishing.</p>"
+                      + "<p>Please contact SoundVerse via email at <b>support@soundverse.com</b> for more details.</p>";
+
 
         emailService.sendEmail(email, subject, content);
         return toMusicResponse(music);
@@ -174,10 +174,10 @@ public List<MusicResponse> getPendingMusic() {
         musicRepository.save(music);
 
         String email = getArtistEmail(music.getArtistId());
-        String subject = "✅ Bài hát đã sẵn sàng để publish!";
-        String content = "<h3>Bài hát của bạn đã được phê duyệt</h3>"
-                       + "<p>Bài hát <b>'" + music.getTitle() + "'</b> đã được phê duyệt.</p>"
-                       + "<p>Bạn có thể publish khi sẵn sàng!</p>";
+        String subject = "✅ The song is ready to be published!";
+        String content = "<h3>Your song has been approved</h3>"
+                      + "<p>The song <b>'" + music.getTitle() + "'</b> has been approved.</p>"
+                      + "<p>You can publish it whenever you're ready!</p>";
 
         emailService.sendEmail(email, subject, content);
         return toMusicResponse(music);

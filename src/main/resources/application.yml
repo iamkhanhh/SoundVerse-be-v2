@@ -1,0 +1,40 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+ 
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://host.docker.internal:33069/sound_verse}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:khanh123}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+ 
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}      
+    port: ${MAIL_PORT:587}                
+    username: ${MAIL_USERNAME}  
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true        
+          starttls:
+            enable: true    
+            required: true      
+          connectiontimeout: 5000  
+          timeout: 5000            
+          writetimeout: 5000        
+    protocol: smtp            
+    default-encoding: UTF-8  
+jwt:
+  signerKey: "85c2f38f-973d-451e-af68-e73e2ef2bee5"
+ 
+aws:
+  accessKeyId: ${AWS_ACCESS_KEY}
+  secretAccessKey: ${AWS_SECRET_KEY}
+  region: ${AWS_BUCKET}
+  bucketName: ${AWS_REGION}

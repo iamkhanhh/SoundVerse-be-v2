@@ -1,4 +1,4 @@
-
+docker build --platform linux/amd64,linux/arm64  -t iamkhanh/sound-verse:0.3.1 .
 docker network create sound-verse
 docker run --name db --network sound-verse -p 3306:3306 -e MYSQL_ROOT_PASSWORD=khanh123 -d mysql:8.0.33
 docker run -d --name sound-verse-be --network sound-verse -p 8080:8080 iamkhanh/sound-verse:0.3.0

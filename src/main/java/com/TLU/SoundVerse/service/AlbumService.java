@@ -66,9 +66,7 @@ public class AlbumService {
   }
 
   public AlbumResponse toAlbumResponse(Album album) {
-
     Map<String, String> user = userService.getUsernameAndIdByArtistId(album.getArtistId());
-
     return AlbumResponse.builder()
         .id(album.getId())
         .title(album.getTitle())

@@ -40,10 +40,10 @@ public class AuthController {
 
         Cookie jwtCookie = new Cookie("access_token", token);
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false); // Để chạy trên localhost, nếu production thì phải `true`
+        jwtCookie.setSecure(true); // Để chạy trên localhost, nếu production thì phải `true`
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(60 * 60 * 24 * 5);
-        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setAttribute("SameSite", "None");
 
         response.addCookie(jwtCookie);
 
@@ -84,10 +84,10 @@ public class AuthController {
 
         Cookie jwtCookie = new Cookie("access_token", token);
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false); // Để chạy trên localhost, nếu production thì phải `true`
+        jwtCookie.setSecure(true); // Để chạy trên localhost, nếu production thì phải `true`
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(60 * 60 * 24 * 5);
-        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setAttribute("SameSite", "None");
 
         response.addCookie(jwtCookie);
 

@@ -97,6 +97,8 @@ public class AuthService {
         User user = new User();
         user.setUsername(input.getUsername());
         user.setEmail(input.getEmail());
+        user.setDob(input.getDob());
+        user.setCountry(input.getCountry());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));

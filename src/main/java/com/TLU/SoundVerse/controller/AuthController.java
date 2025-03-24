@@ -58,10 +58,10 @@ public class AuthController {
     public ApiResponse<Void> logout(HttpServletResponse response) {
         Cookie jwtCookie = new Cookie("access_token", null);
         jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false);
+        jwtCookie.setSecure(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0);
-        jwtCookie.setAttribute("SameSite", "Strict");
+        jwtCookie.setAttribute("SameSite", "None");
 
         response.addCookie(jwtCookie);
 

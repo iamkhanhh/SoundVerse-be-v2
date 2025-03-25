@@ -1,6 +1,7 @@
 package com.TLU.SoundVerse.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TLU.SoundVerse.dto.request.RegisterUserDto;
 import com.TLU.SoundVerse.dto.request.UserUpdateDto;
 import com.TLU.SoundVerse.dto.response.ApiResponse;
+import com.TLU.SoundVerse.dto.response.UserResponse;
 import com.TLU.SoundVerse.entity.User;
 import com.TLU.SoundVerse.service.UserService;
 
@@ -44,6 +46,18 @@ public class UserController {
     return ApiResponse.<Void>builder()
         .status("success")
         .message("User deleted successfully")
+        .code(200)
+        .build();
+  }
+
+  @GetMapping("/{userId}")
+  ApiResponse<UserResponse> getUserDetail(@PathVariable String userId) {
+    UserResponse userResponse = userService.getUserDetail(userId);
+
+    return ApiResponse.<UserResponse>builder()
+        .status("success")
+        .message("User deleted successfully")
+        .data(userResponse)
         .code(200)
         .build();
   }

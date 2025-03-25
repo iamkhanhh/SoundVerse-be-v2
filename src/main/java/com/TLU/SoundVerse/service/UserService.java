@@ -94,6 +94,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found!"));
     }
 
+    public UserResponse getUserDetail(String userId) {
+        Integer id = Integer.parseInt(userId);
+        return toUserResponse(getUserById(id));
+    }
+
     public Integer getArtistIdByUserId(Integer userId) {
 
         Artist artist = artistRepository.findByUserId(userId);

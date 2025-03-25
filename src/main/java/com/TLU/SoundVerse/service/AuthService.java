@@ -62,6 +62,14 @@ public class AuthService {
             throw new RuntimeException("Password did not match");
         }
 
+        if (user.getStatus() == UserStatus.DELETED) {
+            throw new RuntimeException("Your account has been deleted! Please contact us to get more detail"); 
+        } else if (user.getStatus() == UserStatus.DISABLED) {
+            throw new RuntimeException("Your account has been disabled! Please contact us to get more detail"); 
+        } else if (user.getStatus() == UserStatus.PENDING) {
+            throw new RuntimeException("Your account has not been active! Please contact us to active your account"); 
+        }
+
         return generateToken(user.getId(), user.getEmail(), user.getUsername(), user.getRole());
     }
 

@@ -101,7 +101,7 @@ public class MusicService {
   }
 
   public List<MusicResponse> getAllMusic() {
-    List<Music> musicList = musicRepository.findAll();
+    List<Music> musicList = musicRepository.findByStatus(MusicStatus.PUBLISHED);
 
     return musicList.stream()
                     .map(this::toMusicResponse)

@@ -3,6 +3,7 @@ package com.TLU.SoundVerse.controller;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,15 +80,14 @@ public class AdminController {
   }
 
   
-  @PutMapping("/update")
-  public ApiResponse<Void> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
-    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
-    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
-    userService.updateUser(id, updateDto);
+  @PutMapping("/update_user/{userId}")
+public ApiResponse<Void> updateUser(@PathVariable("userId") Integer userId, 
+                                    @RequestBody UserUpdateDto updateDto) {
+    userService.updateUser(userId, updateDto);
     return ApiResponse.<Void>builder()
         .status("success")
-        .message("Update prfile successfully")
+        .message("Update profile successfully")
         .code(200)
         .build();
-  }
+} 
 }

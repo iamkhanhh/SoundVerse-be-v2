@@ -1,5 +1,7 @@
 package com.TLU.SoundVerse.controller;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,7 +66,9 @@ public class UserController {
 
   @PutMapping("/update")
   public ApiResponse<Void> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
-    userService.updateUser(request, updateDto);
+     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Integer id = Integer.parseInt(String.valueOf(user.get("id")));
+    userService.updateUser(id, updateDto);
     return ApiResponse.<Void>builder()
         .status("success")
         .message("Update prfile successfully")

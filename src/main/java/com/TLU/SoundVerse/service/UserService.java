@@ -138,8 +138,7 @@ public class UserService {
         return null;
     }
 
-    public User updateUser(HttpServletRequest request, UserUpdateDto updateDto) {
-        Integer userId = getUserIdFromRequest(request);
+    public User updateUser(Integer userId, UserUpdateDto updateDto) {
         if (userId == null) {
             throw new RuntimeException("User ID not found in request");
         }

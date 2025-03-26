@@ -66,7 +66,7 @@ public class UserController {
 
   @PutMapping("/update")
   public ApiResponse<Void> updateUser(HttpServletRequest request, @RequestBody UserUpdateDto updateDto) {
-     Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
+    Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
     Integer id = Integer.parseInt(String.valueOf(user.get("id")));
     userService.updateUser(id, updateDto);
     return ApiResponse.<Void>builder()

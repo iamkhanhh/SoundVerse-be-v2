@@ -2,6 +2,8 @@ package com.TLU.SoundVerse.dto.request;
 
 import java.time.LocalDate;
 
+import com.TLU.SoundVerse.enums.UserRole;
+import com.TLU.SoundVerse.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.Size;
@@ -31,4 +33,9 @@ public class UserUpdateDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dob;
+
+    private UserRole role;
+
+    private UserStatus status;
+
 }

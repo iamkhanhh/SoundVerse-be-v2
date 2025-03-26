@@ -166,6 +166,12 @@ public class UserService {
             }
             user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
         }
+        if (updateDto.getRole() != null) 
+            user.setRole(updateDto.getRole());
+
+  
+        if (updateDto.getStatus() != null) 
+            user.setStatus(updateDto.getStatus());
 
         return userRepository.save(user);
     }

@@ -68,7 +68,7 @@ public class MusicService {
   }
 
   public List<MusicResponse> getMusicByAlbumId(Integer albumsId) {
-    List<Music> musicList = musicRepository.findByAlbumsId(albumsId);
+    List<Music> musicList = musicRepository.findByAlbumsIdAndStatus(albumsId, MusicStatus.PUBLISHED);
     
     return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }

@@ -17,7 +17,7 @@ public interface MusicRepository extends JpaRepository<Music, Integer> {
 
     List<Music> findByArtistId(Integer artistId);
 
-    List<Music> findByAlbumsId(Integer albumsId);
+    List<Music> findByAlbumsIdAndStatus(Integer albumsId, MusicStatus status);
 
     Optional<Music> findById(Integer id);
 

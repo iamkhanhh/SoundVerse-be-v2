@@ -39,7 +39,7 @@ public class AdminController {
         @SuppressWarnings("unchecked")
         Map<String, Object> user = (Map<String, Object>) request.getAttribute("user");
 
-        String role = (String) user.get("role");  
+        String role = (String) user.get("role");
 
         ApiResponse<Boolean> apiResponse = new ApiResponse<Boolean>();
 
@@ -55,14 +55,12 @@ public class AdminController {
         return new ApiResponse<>(200, "Get statistics successfully", "success", stats);
     }
 
-    
     @GetMapping("/musics")
     public ApiResponse<List<MusicResponse>> getAllMusic() {
         List<MusicResponse> musicList = musicService.getAllMusic();
         return new ApiResponse<>(200, "Get all music successfully", "success", musicList);
     }
 
-   
     @GetMapping("/albums")
     public ApiResponse<List<AlbumResponse>> getAllAlbums() {
         List<AlbumResponse> albumList = albumService.getAlbums();
@@ -76,18 +74,17 @@ public class AdminController {
         apiResponse.setStatus("success");
         apiResponse.setMessage("List users successfilly");
         apiResponse.setData(userService.getUsers());
-    return apiResponse;
-  }
+        return apiResponse;
+    }
 
-  
-  @PutMapping("/update_user/{userId}")
-public ApiResponse<Void> updateUser(@PathVariable("userId") Integer userId, 
-                                    @RequestBody UserUpdateDto updateDto) {
-    userService.updateUser(userId, updateDto);
-    return ApiResponse.<Void>builder()
-        .status("success")
-        .message("Update profile successfully")
-        .code(200)
-        .build();
-} 
+    @PutMapping("/update_user/{userId}")
+    public ApiResponse<Void> updateUser(@PathVariable("userId") Integer userId,
+            @RequestBody UserUpdateDto updateDto) {
+        userService.updateUser(userId, updateDto);
+        return ApiResponse.<Void>builder()
+                .status("success")
+                .message("Update profile successfully")
+                .code(200)
+                .build();
+    }
 }

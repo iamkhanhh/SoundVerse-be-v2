@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.TLU.SoundVerse.entity.Like;
+import com.TLU.SoundVerse.entity.Music;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Integer> {
@@ -20,4 +22,8 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
     void deleteByUserIdAndMusicId(Integer userId, Integer musicId);
 
     Optional<Like> findByUserIdAndMusicId(Integer userId, Integer musicId);
+
+    @Query("SELECT m FROM Like l JOIN Music m ON l.musicId = m.id WHERE l.userId = :userId")
+    List<Music> findFavoriteMusicByUserId(@Param("userId") Integer userId);
+
 }

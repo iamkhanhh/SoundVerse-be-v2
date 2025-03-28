@@ -161,4 +161,15 @@ public class MusicController {
         }
         return null;
     }
+ 
+    @GetMapping("/favorites")
+    public ApiResponse<List<MusicResponse>> getFavoriteMusic(HttpServletRequest request) {
+        Integer userId = getUserIdFromRequest(request);
+        List<MusicResponse> favoriteMusic = musicService.getFavoriteMusic(userId);
+        ApiResponse<List<MusicResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Get Favorite Music successfully");
+        apiResponse.setData(favoriteMusic);
+        return apiResponse;
+    }
 }

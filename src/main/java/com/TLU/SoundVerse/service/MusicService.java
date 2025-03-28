@@ -13,6 +13,7 @@ import com.TLU.SoundVerse.entity.Artist;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 import com.TLU.SoundVerse.repository.ArtistRepository;
+import com.TLU.SoundVerse.repository.LikeRepository;
 import com.TLU.SoundVerse.repository.MusicRepository;
 import com.TLU.SoundVerse.repository.MusicsOfPlaylistRepository;
 import com.TLU.SoundVerse.repository.UserRepository;
@@ -38,6 +39,7 @@ public class MusicService {
   EmailService emailService;
   UserRepository userRepository;
   ArtistRepository artistRepository;
+  LikeRepository likeRepository;
 
   public MusicResponse createMusic(CreateMusicDto createMusicDto, Integer user_id) {
     Integer artistId = userService.getArtistIdByUserId(user_id);
@@ -197,6 +199,17 @@ public List<MusicResponse> getPendingMusic() {
       return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
   
+  public List<MusicResponse> getFavoriteMusic(Integer userId) {
+    if (userId == null) {
+        throw new RuntimeException("User not found");
+    }
+
+    List<Music> favoriteMusic = likeRepository.findFavoriteMusicByUserId(userId);
+
+    return favoriteMusic.stream().map(this::toMusicResponse).collect(Collectors.toList());
+}
+
+
   
 
     public Integer getArtistIdByUserId(Integer userId) {

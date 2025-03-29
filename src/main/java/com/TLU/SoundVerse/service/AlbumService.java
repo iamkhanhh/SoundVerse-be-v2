@@ -44,7 +44,7 @@ public class AlbumService {
   }
 
   public AlbumResponse getAlbumById(Integer id) {
-    Album album = albumRepository.findById(id);
+    Album album = albumRepository.findById(id).orElse(null);
     return toAlbumResponse(album);
   }
 
@@ -64,6 +64,17 @@ public class AlbumService {
                     .map(this::toAlbumResponse)
                     .collect(Collectors.toList());
   }
+  
+  public void deleteAlbum(Integer albumId) {
+    Album album = albumRepository.findById(albumId)
+                                 .orElseThrow(() -> new RuntimeException("Album không tồn tại!"));
+
+    // Xóa tất cả bài hát trong album
+    musicService.deleteMusicByAlbumId(albumId);
+
+    // Xóa album
+    albumRepository.delete(album);
+}
 
   public AlbumResponse toAlbumResponse(Album album) {
     Map<String, String> user = userService.getUsernameAndIdByArtistId(album.getArtistId());

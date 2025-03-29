@@ -85,6 +85,11 @@ public class MusicService {
     return musics.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
+  public void deleteMusicByAlbumId(Integer albumId) {
+    List<Music> songs = musicRepository.findByAlbumId(albumId);
+    musicRepository.deleteAll(songs);
+}
+
   public MusicResponse toMusicResponse(Music music) {
     Map<String, String> user = userService.getUsernameAndIdByArtistId(music.getArtistId());
     return MusicResponse.builder()

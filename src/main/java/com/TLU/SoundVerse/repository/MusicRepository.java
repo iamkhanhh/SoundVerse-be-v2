@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.TLU.SoundVerse.dto.response.MusicResponse;
 import com.TLU.SoundVerse.entity.Music;
 import com.TLU.SoundVerse.enums.MusicStatus;
 
@@ -33,4 +35,6 @@ public interface MusicRepository extends JpaRepository<Music, Integer> {
 
     @Query("SELECT COUNT(m) FROM Music m WHERE m.artistId = :artistId")
     int countMusicByArtist(@Param("artistId") Integer artistId);
+
+    List<Music> findByAlbumId(Integer albumbId);
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.TLU.SoundVerse.entity.Album;
 
 @Repository
-public interface AlbumRepository extends JpaRepository<Album, Long> {
+public interface AlbumRepository extends JpaRepository<Album, Integer> {
     List<Album> findByTitleContainingIgnoreCase(String keyword);
 
     @Query(value = "SELECT * FROM album ORDER BY RAND() LIMIT 4", nativeQuery = true)
@@ -20,8 +20,6 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     Integer countAlbums();
 
     List<Album> findByArtistId(Integer artistId);
-
-    Album findById(Integer id);
 
     @Query("SELECT COUNT(a) FROM Album a WHERE a.artistId = :artistId")
     int countAlbumsByArtist(@Param("artistId") Integer artistId);

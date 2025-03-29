@@ -3,6 +3,7 @@ package com.TLU.SoundVerse.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +52,18 @@ public class AlbumController {
     apiResponse.setData(albums);
     return apiResponse;
   }
+
+  @DeleteMapping("/{albumId}")
+public ApiResponse<String> deleteAlbum(@PathVariable Integer albumId) {
+    albumService.deleteAlbum(albumId);
+
+    ApiResponse<String> apiResponse = new ApiResponse<>();
+    apiResponse.setStatus("success");
+    apiResponse.setMessage("Delete ALbum succesfully.");
+    apiResponse.setData(null);
+
+    return apiResponse;
+}
 
   @GetMapping
   ApiResponse<List<AlbumResponse>> getMusic(HttpServletRequest request) {

@@ -69,12 +69,10 @@ public class AlbumService {
     Album album = albumRepository.findById(albumId)
                                  .orElseThrow(() -> new RuntimeException("Album không tồn tại!"));
 
-    // Xóa tất cả bài hát trong album
     musicService.deleteMusicByAlbumId(albumId);
 
-    // Xóa album
     albumRepository.delete(album);
-}
+  }
 
   public AlbumResponse toAlbumResponse(Album album) {
     Map<String, String> user = userService.getUsernameAndIdByArtistId(album.getArtistId());

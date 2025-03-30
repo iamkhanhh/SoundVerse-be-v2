@@ -65,30 +65,37 @@ public class MusicService {
     List<Music> musicList = musicRepository.findByArtistId(artistId);
 
     return musicList.stream()
-                    .map(this::toMusicResponse)
-                    .collect(Collectors.toList());
+        .map(this::toMusicResponse)
+        .collect(Collectors.toList());
+  }
+
+  public void deleteMusic(Integer musicId) {
+    Music music = musicRepository.findById(musicId)
+        .orElseThrow(() -> new RuntimeException("Music not found!"));
+
+    musicRepository.delete(music);
   }
 
   public List<MusicResponse> getMusicByAlbumId(Integer albumsId) {
     List<Music> musicList = musicRepository.findByAlbumsIdAndStatus(albumsId, MusicStatus.PUBLISHED);
-    
+
     return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
   public List<MusicResponse> getMusicsByPlaylistId(Integer playlistId) {
     List<MusicsOfPlaylist> musicList = musicsOfPlaylistRepository.findByAlbumsId(playlistId);
 
-    List<Music> musics =  musicList.stream()
-                                  .map(mop -> musicRepository.findById(mop.getMusicId()).orElse(null))
-                                  .collect(Collectors.toList());
-    
+    List<Music> musics = musicList.stream()
+        .map(mop -> musicRepository.findById(mop.getMusicId()).orElse(null))
+        .collect(Collectors.toList());
+
     return musics.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
   public void deleteMusicByAlbumId(Integer albumId) {
-    List<Music> songs = musicRepository.findByAlbumId(albumId);
+    List<Music> songs = musicRepository.findByAlbumsId(albumId);
     musicRepository.deleteAll(songs);
-}
+  }
 
   public MusicResponse toMusicResponse(Music music) {
     Map<String, String> user = userService.getUsernameAndIdByArtistId(music.getArtistId());
@@ -96,7 +103,8 @@ public class MusicService {
         .id(music.getId())
         .title(music.getTitle())
         .description(music.getDescription())
-        .thumbnail(music.getThumbnail() != null ? s3Service.getS3Url(music.getThumbnail()) : "/default_playlist_thumbnail.jpg")
+        .thumbnail(
+            music.getThumbnail() != null ? s3Service.getS3Url(music.getThumbnail()) : "/default_playlist_thumbnail.jpg")
         .albumsId(music.getAlbumsId())
         .genre(genreService.getGenreById(music.getGenreId()))
         .artist(user.get("username"))
@@ -111,121 +119,113 @@ public class MusicService {
     List<Music> musicList = musicRepository.findByStatus(MusicStatus.PUBLISHED);
 
     return musicList.stream()
-                    .map(this::toMusicResponse)
-                    .collect(Collectors.toList());
-}
+        .map(this::toMusicResponse)
+        .collect(Collectors.toList());
+  }
 
-public List<MusicResponse> getPendingMusic() {
+  public List<MusicResponse> getPendingMusic() {
     List<Music> musicList = musicRepository.findByStatus(MusicStatus.PENDING);
 
     return musicList.stream()
-                    .map(this::toMusicResponse)
-                    .collect(Collectors.toList());
-}
+        .map(this::toMusicResponse)
+        .collect(Collectors.toList());
+  }
 
   public List<MusicResponse> getUnpublishMusicByArtistId(Integer userId) {
-      Integer artistId = userService.getArtistIdByUserId(userId);
-      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.UNPUBLISHED);
-      
-      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+    Integer artistId = userService.getArtistIdByUserId(userId);
+    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.UNPUBLISHED);
+
+    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
 
   private String getArtistEmail(Integer artistId) {
-        return userRepository.findById(artistId)
-                .map(User::getEmail)
-                .orElseThrow(() -> new RuntimeException("Artist Not Found"));
-    }
-
-    public MusicResponse publishMusic(Integer musicId) throws MessagingException {
-        Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Music Not Found"));
-
-        music.setStatus(MusicStatus.PUBLISHED);
-        music.setUpdatedAt(LocalDateTime.now());
-        musicRepository.save(music);
-
-        String email = getArtistEmail(music.getArtistId());
-        String subject = "🎉 The song has been published!";
-        String content = "<h3>Congratulations!</h3>"
-                      + "<p>The song <b>'" + music.getTitle() + "'</b> is now ready to be released on SoundVerse! 🚀</p>";
-
-        emailService.sendEmail(email, subject, content);
-        return toMusicResponse(music);
-    }
-
-    public MusicResponse refuseMusic(Integer musicId) throws MessagingException {
-        Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Music Not Found"));
-
-        music.setStatus(MusicStatus.REFUSED);
-        music.setUpdatedAt(LocalDateTime.now());
-        musicRepository.save(music);
-
-        String email = getArtistEmail(music.getArtistId());
-        String subject = "❌ The song was rejected for publishing!";
-        String content = "<h3>Your song has been rejected</h3>"
-                      + "<p>The song <b>'" + music.getTitle() + "'</b> has been rejected for publishing.</p>"
-                      + "<p>Please contact SoundVerse via email at <b>support@soundverse.com</b> for more details.</p>";
-
-
-        emailService.sendEmail(email, subject, content);
-        return toMusicResponse(music);
-    }
-
-    public MusicResponse approveMusic(Integer musicId) throws MessagingException {
-        Music music = musicRepository.findById(musicId)
-                .orElseThrow(() -> new RuntimeException("Music Not Found"));
-
-        music.setStatus(MusicStatus.UNPUBLISHED);
-        music.setUpdatedAt(LocalDateTime.now());
-        musicRepository.save(music);
-
-        String email = getArtistEmail(music.getArtistId());
-        String subject = "✅ The song is ready to be published!";
-        String content = "<h3>Your song has been approved</h3>"
-                      + "<p>The song <b>'" + music.getTitle() + "'</b> has been approved.</p>"
-                      + "<p>You can publish it whenever you're ready!</p>";
-
-        emailService.sendEmail(email, subject, content);
-        return toMusicResponse(music);
-    }
-
-    public List<MusicResponse> getPublishedMusicByArtistId(Integer userId) {
-      Integer artistId = userService.getArtistIdByUserId(userId);
-      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
-      
-      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+    return userRepository.findById(artistId)
+        .map(User::getEmail)
+        .orElseThrow(() -> new RuntimeException("Artist Not Found"));
   }
-  
+
+  public MusicResponse publishMusic(Integer musicId) throws MessagingException {
+    Music music = musicRepository.findById(musicId)
+        .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+    music.setStatus(MusicStatus.PUBLISHED);
+    music.setUpdatedAt(LocalDateTime.now());
+    musicRepository.save(music);
+
+    String email = getArtistEmail(music.getArtistId());
+    String subject = "🎉 The song has been published!";
+    String content = "<h3>Congratulations!</h3>"
+        + "<p>The song <b>'" + music.getTitle() + "'</b> is now ready to be released on SoundVerse! 🚀</p>";
+
+    emailService.sendEmail(email, subject, content);
+    return toMusicResponse(music);
+  }
+
+  public MusicResponse refuseMusic(Integer musicId) throws MessagingException {
+    Music music = musicRepository.findById(musicId)
+        .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+    music.setStatus(MusicStatus.REFUSED);
+    music.setUpdatedAt(LocalDateTime.now());
+    musicRepository.save(music);
+
+    String email = getArtistEmail(music.getArtistId());
+    String subject = "❌ The song was rejected for publishing!";
+    String content = "<h3>Your song has been rejected</h3>"
+        + "<p>The song <b>'" + music.getTitle() + "'</b> has been rejected for publishing.</p>"
+        + "<p>Please contact SoundVerse via email at <b>support@soundverse.com</b> for more details.</p>";
+
+    emailService.sendEmail(email, subject, content);
+    return toMusicResponse(music);
+  }
+
+  public MusicResponse approveMusic(Integer musicId) throws MessagingException {
+    Music music = musicRepository.findById(musicId)
+        .orElseThrow(() -> new RuntimeException("Music Not Found"));
+
+    music.setStatus(MusicStatus.UNPUBLISHED);
+    music.setUpdatedAt(LocalDateTime.now());
+    musicRepository.save(music);
+
+    String email = getArtistEmail(music.getArtistId());
+    String subject = "✅ The song is ready to be published!";
+    String content = "<h3>Your song has been approved</h3>"
+        + "<p>The song <b>'" + music.getTitle() + "'</b> has been approved.</p>"
+        + "<p>You can publish it whenever you're ready!</p>";
+
+    emailService.sendEmail(email, subject, content);
+    return toMusicResponse(music);
+  }
+
+  public List<MusicResponse> getPublishedMusicByArtistId(Integer userId) {
+    Integer artistId = userService.getArtistIdByUserId(userId);
+    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PUBLISHED);
+
+    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+  }
+
   public List<MusicResponse> getPendingMusicByArtistId(Integer userId) {
-      Integer artistId = userService.getArtistIdByUserId(userId);
-      List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
-      
-      return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
+    Integer artistId = userService.getArtistIdByUserId(userId);
+    List<Music> musicList = musicRepository.findByArtistIdAndStatus(artistId, MusicStatus.PENDING);
+
+    return musicList.stream().map(this::toMusicResponse).collect(Collectors.toList());
   }
-  
+
   public List<MusicResponse> getFavoriteMusic(Integer userId) {
     if (userId == null) {
-        throw new RuntimeException("User not found");
+      throw new RuntimeException("User not found");
     }
 
     List<Music> favoriteMusic = likeRepository.findFavoriteMusicByUserId(userId);
 
     return favoriteMusic.stream().map(this::toMusicResponse).collect(Collectors.toList());
-}
+  }
 
+  public Integer getArtistIdByUserId(Integer userId) {
 
-  
+    Artist artist = artistRepository.findByUserId(userId);
 
-    public Integer getArtistIdByUserId(Integer userId) {
-
-        Artist artist = artistRepository.findByUserId(userId);
-
-        return artist.getId();
-    }
-
-  
-
-  
+    return artist.getId();
+  }
 
 }

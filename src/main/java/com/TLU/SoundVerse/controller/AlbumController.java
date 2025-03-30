@@ -54,7 +54,7 @@ public class AlbumController {
   }
 
   @DeleteMapping("/{albumId}")
-public ApiResponse<String> deleteAlbum(@PathVariable Integer albumId) {
+  public ApiResponse<String> deleteAlbum(@PathVariable Integer albumId) {
     albumService.deleteAlbum(albumId);
 
     ApiResponse<String> apiResponse = new ApiResponse<>();
@@ -63,7 +63,7 @@ public ApiResponse<String> deleteAlbum(@PathVariable Integer albumId) {
     apiResponse.setData(null);
 
     return apiResponse;
-}
+  }
 
   @GetMapping
   ApiResponse<List<AlbumResponse>> getMusic(HttpServletRequest request) {

@@ -3,7 +3,7 @@ package com.TLU.SoundVerse.controller;
 import java.util.List;
 import java.util.Map;
 
-
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +29,6 @@ import lombok.AccessLevel;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MusicController {
     MusicService musicService;
-
 
     @PostMapping
     public ApiResponse<MusicResponse> createMusic(HttpServletRequest request, @RequestBody CreateMusicDto createMusicDto) {
@@ -140,6 +139,18 @@ public class MusicController {
         apiResponse.setStatus("success");
         apiResponse.setMessage("Music approved successfully");
         apiResponse.setData(musicResponse);
+        return apiResponse;
+    }
+
+    @DeleteMapping("/{musicId}")
+    public ApiResponse<String> deleteMusic(@PathVariable Integer musicId) {
+        musicService.deleteMusic(musicId);
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setStatus("success");
+        apiResponse.setMessage("Delete ALbum succesfully.");
+        apiResponse.setData(null);
+
         return apiResponse;
     }
 
